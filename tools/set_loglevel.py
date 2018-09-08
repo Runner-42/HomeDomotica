@@ -2,7 +2,7 @@
 import sys
 import pika
 
-queue_name='IQ_RPI_INPUTBUTTON'
+queue_name='IQ_RPI_INPUTBUTTON_PI3'
 
 if len(sys.argv) == 3:
     queue_name = sys.argv[1]
