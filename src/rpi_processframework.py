@@ -82,6 +82,31 @@ class RPiProcessFramework():
             dest="input_queue_name",
             help="Input queue name (default is set to the process name, prefixed by IQ_"
             )
+        # => check if a name for the configuration file is provided as a parameter.
+        #If not, use the default name <process_name>.cfg
+        parser.add_argument(
+            "-cf",
+            nargs="?",
+            type=str,
+            const=self.process_attributes.get_item("ProcessName") + ".cfg",
+            default=self.process_attributes.get_item("ProcessName") + ".cfg",
+            action="store",
+            dest="config_file_name",
+            help="Name of the process configuration file (Deault value is <process name>.cfg)."
+            )
+        # => check if a location for the configuration file is provided as a parameter.
+        #If not, use the default location /home/homedomotica
+        parser.add_argument(
+            "-cfp",
+            nargs="?",
+            type=str,
+            const="/home/homedomotica",
+            default="/home/homedomotica",
+            action="store",
+            dest="config_file_path",
+            help="Path to the process configuration file (Deault value is /home/homedomotica)."
+            )
+        # Add the parameters to the process attributes dictionary
         self.process_attributes.push_item({"InputQueueName": parser.parse_args().input_queue_name})
         self.logger_instance.debug(
             "{} - Push 'InputQueueName = {}' to process attribute dictionary".format(
@@ -89,11 +114,26 @@ class RPiProcessFramework():
                 self.process_attributes.get_item("InputQueueName")
                 )
             )
+        self.process_attributes.push_item({"ConfigFileName": str.lower(parser.parse_args().config_file_name)})
+        self.logger_instance.debug(
+            "{} - Push 'ConfigFileName = {}' to process attribute dictionary".format(
+                __name__,
+                self.process_attributes.get_item("ConfigFileName")
+                )
+            )
+        self.process_attributes.push_item({"ConfigFilePath": parser.parse_args().config_file_path})
+        self.logger_instance.debug(
+            "{} - Push 'ConfigFilePath = {}' to process attribute dictionary".format(
+                __name__,
+                self.process_attributes.get_item("ConfigFilePath")
+                )
+            )
 
         # Initialize process configuration file
         # Name of the config file is set to the process name (lower case) and file extension .cfg
         self.config_file = RPiHomedomoticaConfigurationFile(
-            str.lower(self.process_attributes.get_item("ProcessName")) + ".cfg")
+            file_name=self.process_attributes.get_item("ConfigFileName"),
+            file_path=self.process_attributes.get_item("ConfigFilePath"))
         self.refresh_process_attributes()
 
         # Initialize Input Queue so we can receive messages
@@ -124,6 +164,8 @@ class RPiProcessFramework():
         long_string += "Process Name: {}\n".format(self.process_attributes.get_item("ProcessName"))
         long_string += "Input Queue Name: {}\n".format(
             self.process_attributes.get_item("InputQueueName"))
+        long_string += "Configuration File Path: {}\n".format(
+            self.process_attributes.get_item("ConfigFilePath"))
         long_string += self.logger_instance.__str__()
         long_string += self.config_file.__str__()
         long_string += self.process_attributes.__str__()
