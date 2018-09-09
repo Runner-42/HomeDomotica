@@ -461,13 +461,13 @@ class RPiInputButton(RPiProcessFramework):
         '''
         reply = True    # We assume we keep going
 
-        message_type, message_action = message.split(";")
-        if message_type == "P":  # A process related message was received,
+        message_list = message.split(";")
+        if message_list[0] == "P":  # A process related message was received,
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the inputbutton list to update any
             # changes
-            if reply is True and message_action == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.input_buttons = self.create_inputbutton_list(
                     self.process_attributes.__repr__())
                 self.process_consumers = self.create_message_senders(

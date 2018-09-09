@@ -303,22 +303,22 @@ class RPiOutputRelay(RPiProcessFramework):
         '''
         reply = True    # We assume we keep going
 
-        message_type, message_action = message.split(";")
-        if message_type == "P":  # A process related message was received
+        message_list = message.split(";")
+        if message_list[0] == "P":  # A process related message was received
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the outputrelay list to update any
             # changes
-            if reply is True and message_action == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.output_relays = self.create_output_relay_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
-        elif message_type == "I":  # An input button related message was received
+        elif message_list[0] == "I":  # An input button related message was received
             self.logger_instance.debug(
                 "RPIOutputRelay - Parsing input button message received {} - {}".format(
                     message,
-                    message_action))
-            self.parse_input_button_message(message_action)
+                    message_list[1]))
+            self.parse_input_button_message(message_list[1])
 
         return reply
 
