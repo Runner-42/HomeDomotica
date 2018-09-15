@@ -199,6 +199,9 @@ class RPiHomedomoticaConfigurationFile():
                         # Keyword is not valid
                         else:
                             invalid_lines_count += 1
+        else:
+            self.invalid_keyword_list.append(
+                "{} does not exist or is empty!".format(self._full_file_name))
 
         # In case we have not find a single valid line, must be something wrong
         if (valid_lines_count == 0) or (invalid_lines_count > 0):
