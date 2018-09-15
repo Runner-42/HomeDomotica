@@ -44,15 +44,6 @@ class RPiProcessFramework():
                  default_log_to_console_enabled=False,
                  default_log_to_file_enabled=True,
                  default_log_to_syslog_enabled=False):
-        # Initiate Logger function so we can start logging stuff
-        self.logger_instance = rpi_logger.RPiLogger(default_log_level,
-                                                    default_log_file,
-                                                    default_log_to_console_enabled,
-                                                    default_log_to_file_enabled,
-                                                    default_log_to_syslog_enabled)
-
-        # Tell the logger we are starting
-        self.logger_instance.info("{} - Process Starting!".format(__name__))
 
         # Set variable to indicate the process should be running
         self.run_process = True
@@ -65,11 +56,7 @@ class RPiProcessFramework():
 
         # => Push process name to process attribute dictionary
         self.process_attributes.push_item({"ProcessName": parser.prog[:-3]})
-        self.logger_instance.debug(
-            "{} - Push 'ProcessName = {}' to process attribute dictionary".format(
-                __name__,
-                parser.prog[:-3])
-            )
+
         # => check if an input queue name is provided as a parameter.
         #If not, use process name as basis for the queue name
         parser.add_argument(
@@ -106,6 +93,38 @@ class RPiProcessFramework():
             dest="config_file_path",
             help="Path to the process configuration file (Deault value is /home/homedomotica)."
             )
+        # => check if a log level is provided as a parameter.
+        #If not, use the default log level 'INFO'
+        parser.add_argument(
+            "-l",
+            nargs="?",
+            type=str,
+            choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+            action="store",
+            dest="process_log_level",
+            help="Process log level (Deault value is 'INFO')."
+            )
+
+        if parser.parse_args().process_log_level:
+            default_log_level = parser.parse_args().process_log_level
+
+        # Initiate Logger function so we can start logging stuff
+        self.logger_instance = rpi_logger.RPiLogger(default_log_level,
+                                                    default_log_file,
+                                                    default_log_to_console_enabled,
+                                                    default_log_to_file_enabled,
+                                                    default_log_to_syslog_enabled)
+
+        # Tell the logger we are starting
+        self.logger_instance.info("{} - Process Starting!".format(__name__))
+
+        # Send process name information to the logger
+        self.logger_instance.debug(
+            "{} - Push 'ProcessName = {}' to process attribute dictionary".format(
+                __name__,
+                parser.prog[:-3])
+            )
+
         # Add the parameters to the process attributes dictionary
         self.process_attributes.push_item({"InputQueueName": parser.parse_args().input_queue_name})
         self.logger_instance.debug(
@@ -114,7 +133,8 @@ class RPiProcessFramework():
                 self.process_attributes.get_item("InputQueueName")
                 )
             )
-        self.process_attributes.push_item({"ConfigFileName": str.lower(parser.parse_args().config_file_name)})
+        self.process_attributes.push_item(
+            {"ConfigFileName": str.lower(parser.parse_args().config_file_name)})
         self.logger_instance.debug(
             "{} - Push 'ConfigFileName = {}' to process attribute dictionary".format(
                 __name__,
@@ -126,6 +146,14 @@ class RPiProcessFramework():
             "{} - Push 'ConfigFilePath = {}' to process attribute dictionary".format(
                 __name__,
                 self.process_attributes.get_item("ConfigFilePath")
+                )
+            )
+        self.process_attributes.push_item(
+            {"ProcessLogLevel": parser.parse_args().process_log_level})
+        self.logger_instance.debug(
+            "{} - Push 'ProcessLogLevel = {}' to process attribute dictionary".format(
+                __name__,
+                self.process_attributes.get_item("ProcessLogLevel")
                 )
             )
 
@@ -164,8 +192,6 @@ class RPiProcessFramework():
         long_string += "Process Name: {}\n".format(self.process_attributes.get_item("ProcessName"))
         long_string += "Input Queue Name: {}\n".format(
             self.process_attributes.get_item("InputQueueName"))
-        long_string += "Configuration File Path: {}\n".format(
-            self.process_attributes.get_item("ConfigFilePath"))
         long_string += self.logger_instance.__str__()
         long_string += self.config_file.__str__()
         long_string += self.process_attributes.__str__()
@@ -277,6 +303,7 @@ def main():
     used mainly for testing purposes
     '''
     process_instance = RPiProcessFramework()
+    print(process_instance)
 
     while process_instance.run_process:
         with process_instance.process_input_queue as consumer:
