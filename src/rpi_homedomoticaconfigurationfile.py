@@ -32,16 +32,25 @@ class RPiHomedomoticaConfigurationFile():
         ButtonHandler2=[S_RPIINPUTHANDLER2]
     '''
 
-    VALID_KEYWORDS = ("ConsumerQueue1", "ConsumerQueue2", "ConsumerQueue3", "ConsumerQueue4",
+    VALID_KEYWORDS = ("ConsumerQueue1", "ConsumerQueue2", "ConsumerQueue3",\
+                      "ConsumerQueue4", "ConsumerQueue5", "ConsumerQueue6",\
                       "[RPI_INPUTBUTTON]", "[RPI_INPUTBUTTON_PI1]", "[RPI_INPUTBUTTON_PI2]",\
-                      "[RPI_INPUTBUTTON_PI3]", "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]",\
-                      "[RPI_OUTPUTRELAY_PI2]", "[RPI_OUTPUTRELAY_PI3]", "Port", "Host_IP",\
+                      "[RPI_INPUTBUTTON_PI3]", "[RPI_OUTPUTLIGHTS]", "[RPI_OUTPUTLIGHTS_PI1]",\
+                      "[RPI_OUTPUTLIGHTS_PI2]", "[RPI_OUTPUTLIGHTS_PI3]",\
+                      "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]", "[RPI_OUTPUTRELAY_PI2]",\
+                      "[RPI_OUTPUTRELAY_PI3]", "Port", "Host_IP",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
                       "Button05", "Button06", "Button07", "Button10", "Button11", "Button12",\
                       "Button13", "Button14", "Button15", "Button16", "Button17", "Button20",\
                       "Button21", "Button22", "Button23", "Button24", "Button25", "Button26",\
                       "Button27", "Button30", "Button31", "Button32", "Button33", "Button34",\
                       "Button35", "Button36", "Button37", "Output00",\
+                      "Light00", "Light01", "Light02", "Light03", "Light04",\
+                      "Light05", "Light06", "Light07", "Light10", "Light11", "Light12",\
+                      "Light13", "Light14", "Light15", "Light16", "Light17", "Light20",\
+                      "Light21", "Light22", "Light23", "Light24", "Light25", "Light26",\
+                      "Light27", "Light30", "Light31", "Light32", "Light33", "Light34",\
+                      "Light35", "Light36", "Light37",\
                       "Relay00", "Relay01", "Relay10", "Relay11", "Relay20", "Relay21",\
                       "Relay30", "Relay31")
 
