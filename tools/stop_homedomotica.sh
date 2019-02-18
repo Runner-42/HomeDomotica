@@ -13,7 +13,9 @@ pi_reference=`echo -n $h|tail -c 1`
 
 echo "Stopping 'inputbutton' process"
 python3 $path_to_tool_files/send_stop.py IQ_RPI_INPUTBUTTON_PI$pi_reference
-echo "Stopping 'outputreay' process"
+echo "Stopping 'outputrelay' process"
 python3 $path_to_tool_files/send_stop.py IQ_RPI_OUTPUTRELAY_PI$pi_reference
+echo "Stopping 'outputlights' process"
+python3 $path_to_tool_files/send_stop.py IQ_RPI_OUTPUTLIGHTS_PI$pi_reference
 
 deactivate
