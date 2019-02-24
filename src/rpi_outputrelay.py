@@ -10,13 +10,12 @@ Licence:
 '''
 
 import time
-import pifacedigitalio
-from pifacedigitalio import NoPiFaceDigitalDetectedError
+from rpi_piface import RPiPiface
 
 from rpi_processframework import RPiProcessFramework
 #from rpi_messagesender import RPiMessageSender
 
-class RPiOutputRelay(RPiProcessFramework):
+class RPiOutputRelay(RPiProcessFramework, RPiPiface):
     '''
     This class is created to handle the Output Relays available on a piface board
     Following attributes are inherited from the RPiProcessFramework class:
@@ -28,8 +27,6 @@ class RPiOutputRelay(RPiProcessFramework):
         - process_input_queue => Handle to the input queue
         - logger_instance => Handle to the logger instance
     Following attributes are defined in the RPiOutputRelay class:
-        - piface => List of pifacedigitalio objects. One item per Piface Board
-        - number_of_boards => total number of Piface boards detected
         - output_relays => Dictionary including all active relays
             - Key: Unique reference to the output relay. Type: String
                    Example: (0,1) => relay 1 on piface board 0
@@ -56,35 +53,20 @@ class RPiOutputRelay(RPiProcessFramework):
 
         # Initialize all installed PiFace boards
         self.logger_instance.debug("RPiOutputRelay - Initializing PiFace boards")
-        self.piface = []
-        for board in range(0, 5):
-            # A maximim of 4 boards can be installed, each with a dedicated address 0, 1, 2 or 3
-            # We will try to initialize a board with these addresses
-            # Once the initialization fails (and it eventually will fail when we try address 4)
-            # we return the last successfull initialized board
-            # Note: this will be 0 when no boards are dedected
-            try:
-                self.piface.append(pifacedigitalio.PiFaceDigital(board))
-                self.logger_instance.debug("RPiOutputRelay - Board {} detected".format(board))
-            except NoPiFaceDigitalDetectedError:
-                self.number_of_boards = board
-
-                # Let's share some log information
-                if board == 0:
-                    self.logger_instance.critical(
-                        "RPiOutputRelay - No PiFace boards detected. \
-                        Unable to process input signals"
-                        )
-                    self.run_process = False    # No need to continue
-                elif board == 4:
-                    self.logger_instance.info("RPiOutputRelay - Four PiFace boards detected")
-                else:
-                    self.logger_instance.warning(
-                        "RPiOutputRelay - Potentially not all PiFace boards detected." +\
-                        "Address of last detected board = {}".format(board-1))
-
-                break   # we assume that there are no gaps in the addresses of
-                        # the PiFace boards so we exit the for loop
+        RPiPiface.__init__(self)
+        # Let's share some log information
+        if RPiPiface.get_number_of_boards(self) == 0:
+            self.logger_instance.critical(
+                "RPiOutputRelay - No PiFace boards detected. \
+                Unable to process input signals"
+                )
+            self.run_process = False    # No need to continue
+        elif RPiPiface.get_number_of_boards(self) == 4:
+            self.logger_instance.info("RPiOutputRelay - Four PiFace boards detected")
+        else:
+            self.logger_instance.warning(
+                "RPiOutputRelay - Potentially not all PiFace boards detected." +\
+                "Address of last detected board = {}".format(RPiPiface.get_number_of_boards(self)-1))
 
         # Initialize the output relay dictionary
         self.output_relays = self.create_output_relay_list(self.process_attributes.__repr__())
@@ -95,19 +77,23 @@ class RPiOutputRelay(RPiProcessFramework):
         self.logger_instance.info("RPiOutputRelay - Process Stopping!")
 
     def __repr__(self):
-        return str(self.number_of_boards)
+        return str(RPiPiface.get_number_of_boards(self))
 
     def __str__(self):
         long_string = RPiProcessFramework.__str__(self)
-        long_string += "Number of PiFace boards detected: {}\n".format(self.number_of_boards)
+        long_string += "Number of PiFace boards detected: {}\n".format(RPiPiface.get_number_of_boards(self))
         if self.output_relays != {}:
             long_string += "output_relays:\n"
             for key, value in self.output_relays.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No output_relays information found!\n"
         if self.process_logic != {}:
             long_string += "process_logic:\n"
             for key, value in self.process_logic.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No output_relays process logic found!\n"
 
         return long_string
 
@@ -121,7 +107,7 @@ class RPiOutputRelay(RPiProcessFramework):
     @classmethod
     def _get_relay_number(cls, key):
         '''
-        function that retrieves the button board number
+        function that retrieves the button relay number
         '''
         return int(key[3])
 
@@ -190,7 +176,7 @@ class RPiOutputRelay(RPiProcessFramework):
         '''
         reply = {}
 
-        for board in range(0, self.number_of_boards):
+        for board in range(0, RPiPiface.get_number_of_boards(self)):
             for pin in range(0, 2):
                 key = "Relay" + str(board) + str(pin)
                 if key in process_attribute_list:
@@ -228,6 +214,8 @@ class RPiOutputRelay(RPiProcessFramework):
         This method creates a process logic dictionary based on an active output relay list
         If no active relays available, an empty dictionary is returned
         '''
+        self.logger_instance.debug(
+            "RPIOutputRelay - Creating Process Logic Dictionary")
         logic_dictionary = {}
         if self.output_relays:
             for key in self.output_relays:
@@ -241,6 +229,10 @@ class RPiOutputRelay(RPiProcessFramework):
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
+                    self.logger_instance.debug(
+                        "RPIOutputRelay - Adding item to process logic list {}: {}".format(
+                                                                                           input_reference,
+                                                                                           action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
 
@@ -252,8 +244,10 @@ class RPiOutputRelay(RPiProcessFramework):
         as stored in the attributes for each relay.
         '''
         for key in self.output_relays:
-            self.piface[self._get_board_number(key)].relays[self._get_relay_number(key)].value =\
-                self._get_state(key)
+            if self._get_state(key) == 0:
+                RPiPiface.reset_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
+            else:
+                RPiPiface.set_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
 
     def parse_input_button_message(self, message):
         '''
@@ -290,7 +284,7 @@ class RPiOutputRelay(RPiProcessFramework):
                                 relay_key,
                                 self._get_description(relay_key)))
         except KeyError:
-            self.logger_instance.debug(
+            self.logger_instance.warning(
                 "RPIOutputRelay - Unknow input event received {} - skipping".format(message))
 
     def process_message(self, message):
