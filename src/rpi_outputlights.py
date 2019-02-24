@@ -51,10 +51,14 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
             long_string += "output_lights:\n"
             for key, value in self.output_lights.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No output_relays information found!\n"
         if self.process_logic != {}:
             long_string += "process_logic:\n"
             for key, value in self.process_logic.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No output_relays process logic information found!\n"
 
         return long_string
 
@@ -124,6 +128,8 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         This method creates a process logic dictionary based on an active output light list
         If no active lights available, an empty dictionary is returned
         '''
+        self.logger_instance.debug(
+            "RPIOutputLights - Creating Process Logic Dictionary")
         logic_dictionary = {}
         if self.output_lights:
             for key in self.output_lights:
@@ -137,6 +143,10 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
+                    self.logger_instance.debug(
+                        "RPIOutputLights - Adding item to logic process list {}: {}".format(
+                                                                                            input_reference,
+                                                                                            action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
 
