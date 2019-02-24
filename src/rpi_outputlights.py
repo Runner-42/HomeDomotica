@@ -98,7 +98,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         self.logger_instance.debug(
                             "RPiOutputLights - create_output_lights_list - processing attribute list: {}".format(process_attribute_list))
         for board in range(0, self.get_number_of_boards()):
-            for pin in range(0, 7):
+            for pin in range(0, 8):
                 key = "Light" + str(board) + str(pin)
                 if key in process_attribute_list:
                     value = process_attribute_list[key]
