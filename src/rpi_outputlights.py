@@ -52,13 +52,13 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
             for key, value in self.output_lights.items():
                 long_string += "{} = {}\n".format(key, value)
         else:
-            long_string += "No output_relays information found!\n"
+            long_string += "No output_lights information found!\n"
         if self.process_logic != {}:
             long_string += "process_logic:\n"
             for key, value in self.process_logic.items():
                 long_string += "{} = {}\n".format(key, value)
         else:
-            long_string += "No output_relays process logic information found!\n"
+            long_string += "No output_lights process logic information found!\n"
 
         return long_string
 
@@ -70,7 +70,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
 
     def _get_description(self, key):
         '''
-        Gether method to retrieve description for a relay
+        Gether method to retrieve description for an output
         '''
         return self.output_lights[key][1]
 
@@ -136,19 +136,30 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 action_list = []
                 attributes = self.output_lights[key]
                 logic_list = attributes[2]
+                self.logger_instance.debug(
+                        "RPIOutputLights - create_process_logic_dictionary - Processing {}: {}".format(
+                                                                                            key,
+                                                                                            logic_list))
                 for items in logic_list:
                     input_reference, action = items.split('|')
                     action_list_item = [key, action]
+                    self.logger_instance.debug(
+                        "RPIOutputLights - create_process_logic_dictionary - Processing logic_list {}: {}".format(
+                                                                                            input_reference,
+                                                                                            action))
                     if input_reference in logic_dictionary: # pylint: disable=consider-using-get
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
                     self.logger_instance.debug(
-                        "RPIOutputLights - Adding item to logic process list {}: {}".format(
+                        "RPIOutputLights - create_process_logic_dictionary - Adding item to logic process list {}: {}".format(
                                                                                             input_reference,
                                                                                             action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
+        else:
+            self.logger_instance.debug(
+                "RPIOutputLights - create_process_logic_dictionary - No entries found in output_lights list!")
 
         return logic_dictionary
 
@@ -196,7 +207,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         if message_list[0] == "P":  # A process related message was received
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
-            # It's also necessary to refresh the outputrelay list to update any
+            # It's also necessary to refresh the output_lights list to update any
             # changes
             if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.output_lights = self.create_output_lights_list(
