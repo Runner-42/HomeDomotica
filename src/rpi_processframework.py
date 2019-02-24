@@ -91,7 +91,7 @@ class RPiProcessFramework():
             default="/home/homedomotica",
             action="store",
             dest="config_file_path",
-            help="Path to the process configuration file (Deault value is /home/homedomotica)."
+            help="Path to the process configuration file (Default value is /home/homedomotica)."
             )
         # => check if a log level is provided as a parameter.
         #If not, use the default log level 'INFO'

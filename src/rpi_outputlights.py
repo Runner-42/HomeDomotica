@@ -95,7 +95,8 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
             - PulseTimeStamp => timestamp when the pulse state was changed
         '''
         reply = {}
-        
+        self.logger_instance.debug(
+                            "RPiOutputLights - create_output_lights_list - processing attribute list: {}".format(process_attribute_list))
         for board in range(0, self.get_number_of_boards()):
             for pin in range(0, 7):
                 key = "Light" + str(board) + str(pin)
@@ -105,13 +106,15 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                         ";")
                     logic_list = []
                     logic_list = logic.split(',')
+                    self.logger_instance.debug(
+                            "RPiOutputLights - create_output_lights_list - processing {}".format(key))
                     if description != "Not Used":
                         reply[attribute_key] = [
                             0,  # State
                             description,
                             logic_list]  # Timestamp when pulse status was change
                         self.logger_instance.debug(
-                            "RPiOutputLights - Initializing digital output - lights: {}".format(
+                            "RPiOutputLights - create_output_lights_list - lights: {}".format(
                                 attribute_key) +\
                             " - State: {}".format(
                                 reply[attribute_key][0]) +\
