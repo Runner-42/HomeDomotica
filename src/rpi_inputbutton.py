@@ -11,13 +11,12 @@ Licence:
 
 #import argparse
 import time
-import pifacedigitalio
-from pifacedigitalio import NoPiFaceDigitalDetectedError
 
+from rpi_piface import RPiPiface
 from rpi_processframework import RPiProcessFramework
 from rpi_messagesender import RPiMessageSender
 
-class RPiInputButton(RPiProcessFramework):
+class RPiInputButton(RPiProcessFramework, RPiPiface):
     '''
     This class is created to handle the Input Buttons available on a piface board
     Following attributes are inherited from the RPiProcessFramework class:
@@ -29,8 +28,6 @@ class RPiInputButton(RPiProcessFramework):
         - process_input_queue => Handle to the input queue
         - logger_instance => Handle to the logger instance
     Following attributes are defined in the RPiInputButton class:
-        - piface => List of pifacedigitalio objects. One item per Piface Board
-        - number_of_boards => total number of Piface boards detected
         - input_buttons => dictionary where
             - The key is set as the address of the input pin consisting of the board and pin number
             - The corresponding values a list structure containing following attributes:
@@ -58,35 +55,20 @@ class RPiInputButton(RPiProcessFramework):
 
         # Initialize all installed PiFace boards
         self.logger_instance.debug("RPiInputButton - Initializing PiFace boards")
-        self.piface = []
-        for board in range(0, 5):
-            # A maximim of 4 boards can be installed, each with a dedicated address 0, 1, 2 or 3
-            # We will try to initialize a board with these addresses
-            # Once the initialization fails (and it eventually will fail when we try address 4)
-            # we return the last successfull initialized board
-            # Note: this will be 0 when no boards are dedected
-            try:
-                self.piface.append(pifacedigitalio.PiFaceDigital(board))
-                self.logger_instance.debug("RPiInputButton - Board {} detected".format(board))
-            except NoPiFaceDigitalDetectedError:
-                self.number_of_boards = board
-
-                # Let's share some log information
-                if board == 0:
-                    self.logger_instance.critical(
-                        "RPiInputButton - No PiFace boards detected. \
-                        Unable to process input signals"
-                        )
-                    self.run_process = False    # No need to continue
-                elif board == 4:
-                    self.logger_instance.info("RPiInputButton - Four PiFace boards detected")
-                else:
-                    self.logger_instance.warning(
-                        "RPiInputButton - Potentially not all PiFace boards detected." +\
-                        "Address of last detected board = {}".format(board-1))
-
-                break   # we assume that there are no gaps in the addresses of
-                        # the PiFace boards so we exit the for loop
+        RPiPiface.__init__(self)
+        # Let's share some log information
+        if RPiPiface.get_number_of_boards(self) == 0:
+            self.logger_instance.critical(
+                "RPiInputButton - No PiFace boards detected. \
+                Unable to process input signals"
+                )
+            self.run_process = False    # No need to continue
+        elif RPiPiface.get_number_of_boards(self) == 4:
+            self.logger_instance.info("RPiInputButton - Four PiFace boards detected")
+        else:
+            self.logger_instance.warning(
+                "RPiInputButton - Potentially not all PiFace boards detected." +\
+                "Address of last detected board = {}".format(RPiPiface.get_number_of_boards(self)-1))
 
         # Initialize the input buttons dictionary
         self.input_buttons = self.create_inputbutton_list(self.process_attributes.__repr__())
@@ -105,25 +87,24 @@ class RPiInputButton(RPiProcessFramework):
 
     def __str__(self):
         long_string = RPiProcessFramework.__str__(self)
-        long_string += "Number of PiFace boards detected: {}\n".format(self.number_of_boards)
+        long_string += "Number of PiFace boards detected: {}\n".format(RPiPiface.get_number_of_boards(self))
         if self.input_buttons != {}:
             long_string += "input_buttons:\n"
             for key, value in self.input_buttons.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No input_buttons information found!\n"
         if self.process_consumers != {}:
             long_string += "process consumers:\n"
             for key, value in self.process_consumers.items():
                 long_string += "{} = {}\n".format(key, value)
+        else:
+            long_string += "No input_buttons process consumers information found!\n"
+
         return long_string
 
     def __repr__(self):
-        return str(self.number_of_boards)
-
-    def get_number_of_boards(self):
-        '''
-        Getter method for the number_of_boards attribute
-        '''
-        return self.number_of_boards
+        return str(RPiPiface.get_number_of_boards(self))
 
     def create_inputbutton_list(self, process_attribute_list):
         '''
@@ -146,7 +127,7 @@ class RPiInputButton(RPiProcessFramework):
         '''
         reply = {}
 
-        for board in range(0, self.number_of_boards):
+        for board in range(0, RPiPiface.get_number_of_boards(self)):
             for pin in range(0, 8):
                 key = "Button" + str(board) + str(pin)
                 if key in process_attribute_list:
@@ -345,7 +326,7 @@ class RPiInputButton(RPiProcessFramework):
         for key in self.input_buttons:
             self._set_button_state(
                 key,
-                self.piface[_get_board_number(key)].input_pins[_get_pin_number(key)].value)
+                RPiPiface.get_input_button_state(self, _get_board_number(key), _get_pin_number(key)))
 
     def process_input_buttons(self):
         '''
