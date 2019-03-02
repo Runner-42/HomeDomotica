@@ -171,6 +171,8 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         Method responsible to parse an incomming input button message
         Valid actions:
         - TOGGLE
+        - ON
+        - OFF
         Other actions are ignored
         '''
         self.logger_instance.debug(
@@ -192,6 +194,23 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                             "RPIOutputLights - Resetting light {} - {}".format(
                                 light_key,
                                 self._get_description(light_key)))
+                elif light_action == "ON":
+                    self._set_state(light_key, 1)
+                    self.logger_instance.info(
+                            "RPIOutputLights - Setting light {} - {}".format(
+                                light_key,
+                                self._get_description(light_key)))
+                elif light_action == "OFF":
+                    self._set_state(light_key, 0)
+                    self.logger_instance.info(
+                            "RPIOutputLights - Resetting light {} - {}".format(
+                                light_key,
+                                self._get_description(light_key)))
+                else:
+                    self.logger_instance.warning(
+                            "RPIOutputLights - Unknown action received {} for message {} - skipping!".format(
+                                light_action,
+                                message))
         except KeyError:
             self.logger_instance.warning(
                 "RPIOutputLights - Unknow input event received {} - skipping".format(message))
