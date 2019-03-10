@@ -34,6 +34,7 @@ class RPiHomedomoticaConfigurationFile():
 
     VALID_KEYWORDS = ("ConsumerQueue1", "ConsumerQueue2", "ConsumerQueue3",\
                       "ConsumerQueue4", "ConsumerQueue5", "ConsumerQueue6",\
+                      "ConsumerQueue7", "ConsumerQueue8", "ConsumerQueue9",\
                       "[RPI_INPUTBUTTON]", "[RPI_INPUTBUTTON_PI1]", "[RPI_INPUTBUTTON_PI2]",\
                       "[RPI_INPUTBUTTON_PI3]", "[RPI_OUTPUTLIGHTS]", "[RPI_OUTPUTLIGHTS_PI1]",\
                       "[RPI_OUTPUTLIGHTS_PI2]", "[RPI_OUTPUTLIGHTS_PI3]",\
