@@ -17,5 +17,7 @@ echo "Stopping 'outputrelay' process"
 python3 $path_to_tool_files/send_stop.py IQ_RPI_OUTPUTRELAY_PI$pi_reference
 echo "Stopping 'outputlights' process"
 python3 $path_to_tool_files/send_stop.py IQ_RPI_OUTPUTLIGHTS_PI$pi_reference
+echo "Stopping 'outputdimmer' process"
+python3 $path_to_tool_files/send_stop.py IQ_RPI_OUTPUTDIMMER_PI$pi_reference
 
 deactivate

@@ -37,6 +37,8 @@ class RPiHomedomoticaConfigurationFile():
                       "[RPI_INPUTBUTTON]", "[RPI_INPUTBUTTON_PI1]", "[RPI_INPUTBUTTON_PI2]",\
                       "[RPI_INPUTBUTTON_PI3]", "[RPI_OUTPUTLIGHTS]", "[RPI_OUTPUTLIGHTS_PI1]",\
                       "[RPI_OUTPUTLIGHTS_PI2]", "[RPI_OUTPUTLIGHTS_PI3]",\
+                      "[RPI_OUTPUTDIMMER]", "[RPI_OUTPUTDIMMER_PI1]",\
+                      "[RPI_OUTPUTDIMMER_PI2]", "[RPI_OUTPUTDIMMER_PI3]",\
                       "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]", "[RPI_OUTPUTRELAY_PI2]",\
                       "[RPI_OUTPUTRELAY_PI3]", "Port", "Host_IP",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
@@ -51,6 +53,12 @@ class RPiHomedomoticaConfigurationFile():
                       "Light21", "Light22", "Light23", "Light24", "Light25", "Light26",\
                       "Light27", "Light30", "Light31", "Light32", "Light33", "Light34",\
                       "Light35", "Light36", "Light37",\
+                      "Dimmer00", "Dimmer01", "Dimmer02", "Dimmer03", "Dimmer04",\
+                      "Dimmer05", "Dimmer06", "Dimmer07", "Dimmer10", "Dimmer11", "Dimmer12",\
+                      "Dimmer13", "Dimmer14", "Dimmer15", "Dimmer16", "Dimmer17", "Dimmer20",\
+                      "Dimmer21", "Dimmer22", "Dimmer23", "Dimmer24", "Dimmer25", "Dimmer26",\
+                      "Dimmer27", "Dimmer30", "Dimmer31", "Dimmer32", "Dimmer33", "Dimmer34",\
+                      "Dimmer35", "Dimmer36", "Dimmer37",\
                       "Relay00", "Relay01", "Relay10", "Relay11", "Relay20", "Relay21",\
                       "Relay30", "Relay31")
 

@@ -22,5 +22,6 @@ echo "Starting 'outputrelay' process"
 python3  $path_to_source_file/rpi_outputrelay_pi$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
 echo "Starting 'outputlights' process"
 python3  $path_to_source_file/rpi_outputlights_pi$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
-
+echo "Starting 'outputdimmer' process"
+python3  $path_to_source_file/rpi_outputdimmer_pi$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
 deactivate
