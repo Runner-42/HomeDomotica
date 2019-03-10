@@ -52,23 +52,21 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         # Initialize process framework attributes so we can start using them
         RPiProcessFramework.__init__(self, default_log_level='INFO')
 
-        # Initialize all installed PiFace boards
-        self.logger_instance.debug("RPiInputButton - Initializing PiFace boards")
+        # We make use of a PiFace, so let's initialize an instance
         RPiPiface.__init__(self)
-        # Let's share some log information
-        if RPiPiface.get_number_of_boards(self) == 0:
+        if self.get_number_of_boards() == 0:
             self.logger_instance.critical(
                 "RPiInputButton - No PiFace boards detected. \
                 Unable to process input signals"
                 )
             self.run_process = False    # No need to continue
-        elif RPiPiface.get_number_of_boards(self) == 4:
+        elif self.get_number_of_boards() == 4:
             self.logger_instance.info("RPiInputButton - Four PiFace boards detected")
         else:
             self.logger_instance.warning(
                 "RPiInputButton - Potentially not all PiFace boards detected." +\
-                "Address of last detected board = {}".format(RPiPiface.get_number_of_boards(self)-1))
-
+                "Address of last detected board = {}".format(self.get_number_of_boards()-1))
+                
         # Initialize the input buttons dictionary
         self.input_buttons = self.create_inputbutton_list(self.process_attributes.__repr__())
 
@@ -86,7 +84,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
 
     def __str__(self):
         long_string = RPiProcessFramework.__str__(self)
-        long_string += "Number of PiFace boards detected: {}\n".format(RPiPiface.get_number_of_boards(self))
+        long_string += RPiPiface.__str__(self)
         if self.input_buttons != {}:
             long_string += "input_buttons:\n"
             for key, value in self.input_buttons.items():
@@ -103,7 +101,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         return long_string
 
     def __repr__(self):
-        return str(RPiPiface.get_number_of_boards(self))
+        return str(self.get_number_of_boards())
 
     def create_inputbutton_list(self, process_attribute_list):
         '''
@@ -126,7 +124,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         '''
         reply = {}
 
-        for board in range(0, RPiPiface.get_number_of_boards(self)):
+        for board in range(0, self.get_number_of_boards()):
             for pin in range(0, 8):
                 key = "Button" + str(board) + str(pin)
                 if key in process_attribute_list:
@@ -325,7 +323,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         for key in self.input_buttons:
             self._set_button_state(
                 key,
-                RPiPiface.get_input_button_state(self, _get_board_number(key), _get_pin_number(key)))
+                self.get_input_button_state(_get_board_number(key), _get_pin_number(key)))
 
     def process_input_buttons(self):
         '''
