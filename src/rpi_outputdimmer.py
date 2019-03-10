@@ -161,7 +161,7 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
                     logic_dictionary[input_reference] = action_list
         else:
             self.logger_instance.debug(
-                "RPIOutputDimmer - create_process_logic_dictionary - "&
+                "RPIOutputDimmer - create_process_logic_dictionary - " +
                 "No entries found in output_dimmer list!")
 
         return logic_dictionary
