@@ -9,11 +9,10 @@ Copyright:	(c) Wim 2018
 Licence:
 '''
 
-#import argparse
 import time
 
-from rpi_piface import RPiPiface
 from rpi_processframework import RPiProcessFramework
+from rpi_piface import RPiPiface
 from rpi_messagesender import RPiMessageSender
 
 class RPiInputButton(RPiProcessFramework, RPiPiface):
