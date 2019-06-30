@@ -2,10 +2,10 @@
 import sys
 import pika
 
-queue_name='IQ_RPI_INPUTBUTTON_TST2'
-
-if len(sys.argv) > 1:
+if len(sys.argv) == 2:
     queue_name = sys.argv[1]
+else:
+    print("Usage send_process_stat_req.py <Queue Name>")
 
 event = "P;PRINT_PROCESS_STATUS"
 
