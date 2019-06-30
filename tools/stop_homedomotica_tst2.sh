@@ -14,7 +14,7 @@ echo "Stopping Home Domotica processes on $active_environment environment"
 
 source /home/homedomotica/environments/$active_environment/bin/activate
 
-path_to_source_file=/home/homedomotica/environments/$active_environment/src
+path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=TST2
 
 echo "Stopping 'inputbutton' process"
