@@ -10,7 +10,7 @@ else
     active_environment=green
 fi
 
-echo "Stopping Home Domotica processes on $active_environment environment"
+echo "Stopping Home Domotica processes on $active_environment environment!"
 
 source /home/homedomotica/environments/$active_environment/bin/activate
 

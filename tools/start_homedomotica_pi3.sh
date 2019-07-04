@@ -14,7 +14,7 @@ echo "Starting Home Domotica processes on $active_environment environment"
 
 source /home/homedomotica/environments/$active_environment/bin/activate
 
-log_level=DEBUG
+log_level=INFO
 path_to_source_file=/home/homedomotica/environments/$active_environment/src
 path_to_configuration_file=/home/homedomotica/environments/$active_environment/config
 pi_reference=pi3
