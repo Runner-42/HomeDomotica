@@ -15,7 +15,7 @@ echo "Stopping Home Domotica processes on $active_environment environment"
 source /home/homedomotica/environments/$active_environment/bin/activate
 
 path_to_source_files=/home/homedomotica/environments/$active_environment/src
-pi_reference=pi2
+pi_reference=PI2
 
 echo "Stopping 'inputbutton' process"
 python3 $path_to_source_files/send_stop_req.py IQ_RPI_INPUTBUTTON_$pi_reference
