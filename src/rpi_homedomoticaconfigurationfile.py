@@ -42,6 +42,7 @@ class RPiHomedomoticaConfigurationFile():
                       "[RPI_OUTPUTDIMMER_PI2]","[RPI_OUTPUTDIMMER_PI3]","[RPI_OUTPUTDIMMER_TST2]",\
                       "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]", "[RPI_OUTPUTRELAY_PI2]",\
                       "[RPI_OUTPUTRELAY_PI3]", "[RPI_OUTPUTRELAY_TST2]", "Port", "Host_IP",\
+                      "RPI_LIGHTSIMULATOR_TSTMGMT", "RPI_LIGHTSIMULATOR_MGMT",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
                       "Button05", "Button06", "Button07", "Button10", "Button11", "Button12",\
                       "Button13", "Button14", "Button15", "Button16", "Button17", "Button20",\
@@ -61,7 +62,10 @@ class RPiHomedomoticaConfigurationFile():
                       "Dimmer27", "Dimmer30", "Dimmer31", "Dimmer32", "Dimmer33", "Dimmer34",\
                       "Dimmer35", "Dimmer36", "Dimmer37",\
                       "Relay00", "Relay01", "Relay10", "Relay11", "Relay20", "Relay21",\
-                      "Relay30", "Relay31")
+                      "Relay30", "Relay31",\
+                      "Simulation00", "Simulation01", "Simulation02", "Simulation03",\
+                      "Simulation04", "Simulation05", "Simulation06", "Simulation07",\
+                      "Simulation08", "Simulation09", "Simulation10", "Simulation11")
 
 	# Initiator Method
 
