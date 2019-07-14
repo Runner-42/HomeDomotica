@@ -71,7 +71,7 @@ class RPiHomedomoticaConfigurationFile():
                       "Simulation20", "Simulation21", "Simulation22", "Simulation23",\
                       "Simulation24", "Simulation25", "Simulation26", "Simulation27",\
                       "Simulation28", "Simulation29", "Simulation30", "Simulation31",\
-                      "Simulation32", "Simulation33", "Simulation34", "Simulation34",\
+                      "Simulation32", "Simulation33", "Simulation34", "Simulation35",\
                       "Simulation36", "Simulation37", "Simulation38", "Simulation39",\
                       "Simulation40", "Simulation41", "Simulation42", "Simulation43",\
                       "Simulation44", "Simulation45", "Simulation46", "Simulation47",\
