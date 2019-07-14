@@ -16,6 +16,6 @@ path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=TSTMGMT
 
 echo "Sending reinitialize process Request event on $active_environment environment"
-python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_IQ_RPI_LIGHTSIMULATOR__$pi_reference
+python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_LIGHTSIMULATOR_$pi_reference
 
 deactivate
