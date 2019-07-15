@@ -5,6 +5,7 @@ Purpose:	Class RPiOutputLights is used to handle digital outputs on the PiFace b
 Author:	Wim
 
 Created:	22/09/2018
+Updated:    15/07/2019  => Add feature to process light simulator events
 Copyright:	(c) Wim 2018
 Licence:
 '''
@@ -238,13 +239,13 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 self.process_logic = self.create_process_logic_dictionary()
         elif message_list[0] == "I":  # An input button related message was received
             self.logger_instance.debug(
-                "RPIOutputLights - Parsing input button message received {} - {}".format(
+                "RPIOutputLights - Input button message received {} - {}".format(
                     message,
                     message_list[1]))
             self.parse_incoming_message(message_list[1])
         elif message_list[0] == "S":  # A Light Simulator related message was received
             self.logger_instance.debug(
-                "RPIOutputLights - Parsing light simulator message received {} - {}".format(
+                "RPIOutputLights - Light simulator message received {} - {}".format(
                     message,
                     message_list[1]))
             self.parse_incoming_message(message_list[1])
