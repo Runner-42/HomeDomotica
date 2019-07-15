@@ -166,9 +166,10 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
 
         return logic_dictionary
 
-    def parse_input_button_message(self, message):
+    def parse_incoming_message(self, message):
         '''
-        Method responsible to parse an incomming input button message
+        Method responsible to parse an incoming message either from an input button
+        or from the light simulator
         Valid actions:
         - TOGGLE
         - ON
@@ -176,7 +177,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         Other actions are ignored
         '''
         self.logger_instance.debug(
-            "RPIOutputLights - Parsing input button message {}".format(message))
+            "RPIOutputLights - Parsing incoming message {}".format(message))
 
         try:
             action_list = self.process_logic[message]
@@ -213,7 +214,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                                 message))
         except KeyError:
             self.logger_instance.warning(
-                "RPIOutputLights - Unknow input event received {} - skipping".format(message))
+                "RPIOutputLights - Unknow incoming event received {} - skipping".format(message))
 
     def process_message(self, message):
         '''
@@ -240,7 +241,13 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 "RPIOutputLights - Parsing input button message received {} - {}".format(
                     message,
                     message_list[1]))
-            self.parse_input_button_message(message_list[1])
+            self.parse_incoming_message(message_list[1])
+        elif message_list[0] == "S":  # A Light Simulator related message was received
+            self.logger_instance.debug(
+                "RPIOutputLights - Parsing light simulator message received {} - {}".format(
+                    message,
+                    message_list[1]))
+            self.parse_incoming_message(message_list[1])
 
         return reply
 

@@ -66,7 +66,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
             self.logger_instance.warning(
                 "RPiInputButton - Potentially not all PiFace boards detected." +\
                 "Address of last detected board = {}".format(self.get_number_of_boards()-1))
-                
+
         # Initialize the input buttons dictionary
         self.input_buttons = self.create_inputbutton_list(self.process_attributes.__repr__())
 

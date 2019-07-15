@@ -42,6 +42,7 @@ class RPiHomedomoticaConfigurationFile():
                       "[RPI_OUTPUTDIMMER_PI2]","[RPI_OUTPUTDIMMER_PI3]","[RPI_OUTPUTDIMMER_TST2]",\
                       "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]", "[RPI_OUTPUTRELAY_PI2]",\
                       "[RPI_OUTPUTRELAY_PI3]", "[RPI_OUTPUTRELAY_TST2]", "Port", "Host_IP",\
+                      "[RPI_LIGHTSIMULATOR_TSTMGMT]", "[RPI_LIGHTSIMULATOR_MGMT]",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
                       "Button05", "Button06", "Button07", "Button10", "Button11", "Button12",\
                       "Button13", "Button14", "Button15", "Button16", "Button17", "Button20",\
@@ -61,7 +62,32 @@ class RPiHomedomoticaConfigurationFile():
                       "Dimmer27", "Dimmer30", "Dimmer31", "Dimmer32", "Dimmer33", "Dimmer34",\
                       "Dimmer35", "Dimmer36", "Dimmer37",\
                       "Relay00", "Relay01", "Relay10", "Relay11", "Relay20", "Relay21",\
-                      "Relay30", "Relay31")
+                      "Relay30", "Relay31",\
+                      "Simulation00", "Simulation01", "Simulation02", "Simulation03",\
+                      "Simulation04", "Simulation05", "Simulation06", "Simulation07",\
+                      "Simulation08", "Simulation09", "Simulation10", "Simulation11",\
+                      "Simulation12", "Simulation13", "Simulation14", "Simulation15",\
+                      "Simulation16", "Simulation17", "Simulation18", "Simulation19",\
+                      "Simulation20", "Simulation21", "Simulation22", "Simulation23",\
+                      "Simulation24", "Simulation25", "Simulation26", "Simulation27",\
+                      "Simulation28", "Simulation29", "Simulation30", "Simulation31",\
+                      "Simulation32", "Simulation33", "Simulation34", "Simulation35",\
+                      "Simulation36", "Simulation37", "Simulation38", "Simulation39",\
+                      "Simulation40", "Simulation41", "Simulation42", "Simulation43",\
+                      "Simulation44", "Simulation45", "Simulation46", "Simulation47",\
+                      "Simulation48", "Simulation49", "Simulation50", "Simulation51",\
+                      "Simulation52", "Simulation53", "Simulation54", "Simulation55",\
+                      "Simulation56", "Simulation57", "Simulation58", "Simulation59",\
+                      "Simulation60", "Simulation61", "Simulation62", "Simulation63",\
+                      "Simulation64", "Simulation65", "Simulation66", "Simulation67",\
+                      "Simulation68", "Simulation69", "Simulation70", "Simulation71",\
+                      "Simulation72", "Simulation73", "Simulation74", "Simulation75",\
+                      "Simulation76", "Simulation77", "Simulation78", "Simulation79",\
+                      "Simulation80", "Simulation81", "Simulation82", "Simulation83",\
+                      "Simulation84", "Simulation85", "Simulation86", "Simulation87",\
+                      "Simulation88", "Simulation89", "Simulation90", "Simulation91",\
+                      "Simulation92", "Simulation93", "Simulation94", "Simulation95",\
+                      "Simulation96", "Simulation97", "Simulation98", "Simulation99")
 
 	# Initiator Method
 
