@@ -15,7 +15,7 @@ source /home/homedomotica/environments/$active_environment/bin/activate
 path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=MGMT
 
-echo "Sending Set Loglevel Request event on $active_environment environment"
+echo "Sending Set Loglevel Request DEBUG event on $active_environment environment"
 python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_LIGHTSIMULATOR_$pi_reference DEBUG
 
 deactivate
