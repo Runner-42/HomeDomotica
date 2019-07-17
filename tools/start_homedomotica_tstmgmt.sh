@@ -19,7 +19,7 @@ path_to_source_file=/home/homedomotica/environments/$active_environment/src
 path_to_configuration_file=/home/homedomotica/environments/$active_environment/config
 pi_reference=tstmgmt
 
-echo "Starting 'lightsimuator' process"
+echo "Starting 'lightsimulator' process"
 python3  $path_to_source_file/rpi_lightsimulator_$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
 
 deactivate
