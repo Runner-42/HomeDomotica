@@ -209,7 +209,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                                 light_key,
                                 self._get_description(light_key)))
                 else:
-                    self.logger_instance.warning(
+                    self.logger_instance.debug(
                             "RPIOutputLights - Unknown action received {} for message {} - skipping!".format(
                                 light_action,
                                 message))
