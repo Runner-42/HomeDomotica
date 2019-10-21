@@ -45,7 +45,7 @@ class RPiHomedomoticaConfigurationFile():
                       "[RPI_OUTPUTRELAY_PI3]", "[RPI_OUTPUTRELAY_PI4]", "[RPI_OUTPUTRELAY_TST2]", 
                       "Port", "Host_IP",\
                       "[RPI_LIGHTSIMULATOR_TSTMGMT]", "[RPI_LIGHTSIMULATOR_MGMT]",\
-                      "[RPI_OUTPUTVENTILATOR_TST2]", "[RPI_OUTPUTVENTILATOR_PI4]"\
+                      "[RPI_OUTPUTVENTILATOR_TST2]", "[RPI_OUTPUTVENTILATOR_PI4]",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
                       "Button05", "Button06", "Button07", "Button10", "Button11", "Button12",\
                       "Button13", "Button14", "Button15", "Button16", "Button17", "Button20",\
