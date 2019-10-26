@@ -20,5 +20,6 @@ python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_INPU
 python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTLIGHTS_$pi_reference
 python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
 python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTDIMMER_$pi_reference
+python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference
 
 deactivate

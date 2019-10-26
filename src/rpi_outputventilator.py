@@ -314,8 +314,8 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                         reply[attribute_key] = [
                             0,  # State
                             description,
-                            lagtime,
-                            runtime,
+                            int(lagtime),
+                            int(runtime),
                             0, # start_time
                             0] # stop_time
                         self.logger_instance.debug(
@@ -396,7 +396,7 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                         self._set_relaytimer_start_timestamp(relay_key, time.time())
                         # set stop timestamp to 0 to indicate we entered a new run cycle
                         self._set_relaytimer_stop_timestamp(relay_key, 0)
-                        self.logger_instance.info(
+                        self.logger_instance.debug(
                             "RPiOutputVentilator - Setting relay timer {} - {} at {}".format(
                                 relay_key,
                                 self._get_relaytimer_description(relay_key),
@@ -411,7 +411,7 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
 #                                self._get_description(relay_key)))
 #                        self._set_relaytimer_state(relay_key, 0)
                         self._set_relaytimer_stop_timestamp(relay_key, time.time())
-                        self.logger_instance.info(
+                        self.logger_instance.debug(
                             "RPiOutputVentilator - Stop event received for relay {} - {} at {}".format(
                                 relay_key,
                                 self._get_relaytimer_description(relay_key),
@@ -462,16 +462,16 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                 if (time.time() - self._get_relaytimer_starttime(relay)) > self._get_relaytimer_runtime(relay):
                     self._set_state(relay, 0)
                     self._set_relaytimer_state(relay, 0)
-                    self.logger_instance.debug(
-                        "RPiOutputVentilator - Resetting pulse state to 0 for {} after maximum runtime period".format(relay))
-            elif (self._get_relaytimer_state(relay) == 1) and (self._get_relaytimer_stoptime != 0) and (self._get_relaytimer_lagtime(relay) > 0):
+                    self.logger_instance.info(
+                        "RPiOutputVentilator - Resetting pulse state to 0 for {} after maximum runtime period ({} seconds)".format(relay, self._get_relaytimer_runtime(relay)))
+            if (self._get_relaytimer_state(relay) == 1) and (self._get_relaytimer_stoptime(relay) != 0):
                 # If the ventilator is "stopped" for more than "lagtime" second, reset the relay state
                 if (time.time() - self._get_relaytimer_stoptime(relay)) > self._get_relaytimer_lagtime(relay):
                     self._set_state(relay, 0)
                     self._set_relaytimer_state(relay, 0)
                     self._set_relaytimer_stop_timestamp(relay, 0)
-                    self.logger_instance.debug(
-                        "RPiOutputVentilator - Resetting pulse state to 0 for {} after lagtime period".format(relay))
+                    self.logger_instance.info(
+                        "RPiOutputVentilator - Resetting pulse state to 0 for {} after lagtime period ({} seconds)".format(relay, self._get_relaytimer_lagtime(relay)))
 
         self._handle_output_relays()
 
