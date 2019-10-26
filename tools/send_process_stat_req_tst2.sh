@@ -20,5 +20,6 @@ python3 $path_to_source_files/send_process_stat_req.py IQ_RPI_INPUTBUTTON_$pi_re
 python3 $path_to_source_files/send_process_stat_req.py IQ_RPI_OUTPUTLIGHTS_$pi_reference
 python3 $path_to_source_files/send_process_stat_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
 python3 $path_to_source_files/send_process_stat_req.py IQ_RPI_OUTPUTDIMMER_$pi_reference
+python3 $path_to_source_files/send_process_stat_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference
 
 deactivate

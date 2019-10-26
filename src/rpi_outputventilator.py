@@ -437,7 +437,11 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
             # It's also necessary to refresh the outputrelay list to update any
             # changes
             if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+                self.logger_instance.debug(
+                    "RPiOutputVentilator - Refreshing process attributes")
                 self.output_relays = self.create_output_relay_list(
+                    self.process_attributes.__repr__())
+                self.relays_timer = self.create_relay_timer_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
         elif message_list[0] == "I":  # An input button related message was received
