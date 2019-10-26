@@ -17,7 +17,7 @@ source /home/homedomotica/environments/$active_environment/bin/activate
 path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=PI4
 
-echo "Stopping 'outputrelay' process"
-python3 $path_to_source_files/send_stop_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
+echo "Stopping 'outputventilator' process"
+python3 $path_to_source_files/send_stop_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference
 
 deactivate

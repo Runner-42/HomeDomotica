@@ -20,5 +20,6 @@ python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_INPUTBUTTON_$pi_re
 python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTLIGHTS_$pi_reference WARNING
 python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTRELAY_$pi_reference WARNING
 python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTDIMMER_$pi_reference WARNING
+python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference WARNING
 
 deactivate

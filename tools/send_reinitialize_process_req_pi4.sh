@@ -16,6 +16,6 @@ path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=PI4
 
 echo "Sending reinitialize process Request event on $active_environment environment"
-python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
+python3 $path_to_source_files/send_refresh_process_attributes_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference
 
 deactivate

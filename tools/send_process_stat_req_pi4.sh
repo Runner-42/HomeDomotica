@@ -16,6 +16,6 @@ path_to_tool_files=/home/homedomotica/environments/$active_environment/tools
 pi_reference=PI4
 
 echo "Sending Process Status Request event on $active_environment environment"
-python3 $path_to_tool_files/send_process_stat_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
+python3 $path_to_tool_files/send_process_stat_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference
 
 deactivate

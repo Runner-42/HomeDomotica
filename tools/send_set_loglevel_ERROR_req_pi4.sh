@@ -16,6 +16,6 @@ path_to_source_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=PI4
 
 echo "Sending Set Loglevel Request event on $active_environment environment"
-python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTRELAY_$pi_reference ERROR
+python3 $path_to_source_files/send_set_loglevel_req.py IQ_RPI_OUTPUTVENTILATOR_$pi_reference ERROR
 
 deactivate
