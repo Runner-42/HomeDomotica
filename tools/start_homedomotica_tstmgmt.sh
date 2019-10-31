@@ -17,9 +17,16 @@ source /home/homedomotica/environments/$active_environment/bin/activate
 log_level=DEBUG
 path_to_source_file=/home/homedomotica/environments/$active_environment/src
 path_to_configuration_file=/home/homedomotica/environments/$active_environment/config
+path_to_portal_binary_file=/home/homedomotica/environments/$active_environment/bin
+path_to_portal_source_file=/home/homedomotica/environments/$active_environment/portal/src
 pi_reference=tstmgmt
 
 echo "Starting 'lightsimuator' process"
 python3  $path_to_source_file/rpi_lightsimulator_$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
+
+echo "Starting Portal"
+echo "Starting gunicorn process"
+cd $path_to_portal_source_file
+gunicorn --pythonpath $path_to_portal_source_file --workers 1 --bind 127.0.0.1:8000 rpi_homedomoticaportal_wsgi:app
 
 deactivate
