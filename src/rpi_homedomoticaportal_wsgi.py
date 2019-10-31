@@ -1,4 +1,4 @@
-from rpi_homedomoticaportal import HomedomoticaPortal
+from rpi_homedomoticaportal import app
 
 if __name__ == "__main__":
-    HomedomoticaPortal.run()
+    app.run()

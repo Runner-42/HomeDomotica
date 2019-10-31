@@ -27,6 +27,6 @@ python3  $path_to_source_file/rpi_lightsimulator_$pi_reference.py -l $log_level 
 echo "Starting Portal"
 echo "Starting gunicorn process"
 cd $path_to_portal_source_file
-gunicorn --pythonpath $path_to_portal_source_file --workers 1 --bind 127.0.0.1:8000 rpi_homedomoticaportal_wsgi:app
+gunicorn --workers 1 --bind 127.0.0.1:8000 rpi_homedomoticaportal_wsgi:app &
 
 deactivate

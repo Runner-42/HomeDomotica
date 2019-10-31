@@ -1,10 +1,10 @@
 from flask import Flask
 
-HomedomoticaPortal = Flask(__name__)
+app = Flask(__name__)
 
-@HomedomoticaPortal.route('/')
+@app.route('/')
 def hello_world():
-    return "Hello World!"
+    return "<h1 style='color:blue'>Hello There!</h1>"
     
 if __name__ == '__main__':
-    HomedomoticaPortal.run(debug=True,host='0.0.0.0')
+    app.run(debug=True,host='0.0.0.0')
