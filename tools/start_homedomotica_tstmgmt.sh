@@ -18,7 +18,7 @@ log_level=DEBUG
 path_to_source_file=/home/homedomotica/environments/$active_environment/src
 path_to_configuration_file=/home/homedomotica/environments/$active_environment/config
 path_to_portal_binary_file=/home/homedomotica/environments/$active_environment/bin
-path_to_portal_source_file=/home/homedomotica/environments/$active_environment/portal/src
+path_to_portal_source_file=/home/homedomotica/environments/$active_environment/src
 pi_reference=tstmgmt
 
 echo "Starting 'lightsimuator' process"
