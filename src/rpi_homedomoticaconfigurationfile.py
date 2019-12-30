@@ -37,15 +37,15 @@ class RPiHomedomoticaConfigurationFile():
                       "ConsumerQueue7", "ConsumerQueue8", "ConsumerQueue9",\
                       "ConsumerQueue10", "ConsumerQueue11", "ConsumerQueue12",\
                       "[RPI_INPUTBUTTON]", "[RPI_INPUTBUTTON_PI1]", "[RPI_INPUTBUTTON_PI2]",\
-                      "[RPI_INPUTBUTTON_PI3]", "[RPI_INPUTBUTTON_TST2]", "[RPI_OUTPUTLIGHTS]",\
+                      "[RPI_INPUTBUTTON_PI3]", "[RPI_INPUTBUTTON_TST1]", "[RPI_OUTPUTLIGHTS]",\
                       "[RPI_OUTPUTLIGHTS_PI1]","[RPI_OUTPUTLIGHTS_PI2]", "[RPI_OUTPUTLIGHTS_PI3]",\
-                      "[RPI_OUTPUTLIGHTS_TST2]", "[RPI_OUTPUTDIMMER]", "[RPI_OUTPUTDIMMER_PI1]",\
-                      "[RPI_OUTPUTDIMMER_PI2]","[RPI_OUTPUTDIMMER_PI3]","[RPI_OUTPUTDIMMER_TST2]",\
+                      "[RPI_OUTPUTLIGHTS_TST1]", "[RPI_OUTPUTDIMMER]", "[RPI_OUTPUTDIMMER_PI1]",\
+                      "[RPI_OUTPUTDIMMER_PI2]","[RPI_OUTPUTDIMMER_PI3]","[RPI_OUTPUTDIMMER_TST1]",\
                       "[RPI_OUTPUTRELAY]", "[RPI_OUTPUTRELAY_PI1]", "[RPI_OUTPUTRELAY_PI2]",\
-                      "[RPI_OUTPUTRELAY_PI3]", "[RPI_OUTPUTRELAY_PI4]", "[RPI_OUTPUTRELAY_TST2]", 
+                      "[RPI_OUTPUTRELAY_PI3]", "[RPI_OUTPUTRELAY_PI4]", "[RPI_OUTPUTRELAY_TST1]", 
                       "Port", "Host_IP",\
                       "[RPI_LIGHTSIMULATOR_TSTMGMT]", "[RPI_LIGHTSIMULATOR_MGMT]",\
-                      "[RPI_OUTPUTVENTILATOR_TST2]", "[RPI_OUTPUTVENTILATOR_PI4]",\
+                      "[RPI_OUTPUTVENTILATOR_TST1]", "[RPI_OUTPUTVENTILATOR_PI4]",\
                       "Button00", "Button01", "Button02", "Button03", "Button04",\
                       "Button05", "Button06", "Button07", "Button10", "Button11", "Button12",\
                       "Button13", "Button14", "Button15", "Button16", "Button17", "Button20",\
