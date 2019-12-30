@@ -24,9 +24,9 @@ pi_reference=tstmgmt
 echo "Starting 'lightsimuator' process"
 python3  $path_to_source_file/rpi_lightsimulator_$pi_reference.py -l $log_level -cfp $path_to_configuration_file &
 
-echo "Starting Portal"
-echo "Starting gunicorn process"
-cd $path_to_portal_source_file
-gunicorn --workers 1 --bind 127.0.0.1:8000 rpi_homedomoticaportal_wsgi:app &
+#echo "Starting Portal"
+#echo "Starting gunicorn process"
+#cd $path_to_portal_source_file
+#gunicorn --workers 1 --bind 127.0.0.1:8000 rpi_homedomoticaportal_wsgi:app &
 
 deactivate
