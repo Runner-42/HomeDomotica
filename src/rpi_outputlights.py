@@ -213,7 +213,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                                 light_action,
                                 message))
         except KeyError:
-            self.logger_instance.warning(
+            self.logger_instance.debug(
                 "RPIOutputLights - Unknow incoming event received {} - skipping".format(message))
 
     def process_message(self, message):
