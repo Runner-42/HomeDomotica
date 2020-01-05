@@ -284,7 +284,7 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
                                 relay_key,
                                 self._get_description(relay_key)))
         except KeyError:
-            self.logger_instance.warning(
+            self.logger_instance.debug(
                 "RPIOutputRelay - Unknow input event received {} - skipping".format(message))
 
     def process_message(self, message):
