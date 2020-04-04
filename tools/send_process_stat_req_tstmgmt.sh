@@ -16,9 +16,6 @@ path_to_src_files=/home/homedomotica/environments/$active_environment/src
 pi_reference=TSTMGMT
 
 echo "Sending Process Status Request event on $active_environment environment"
-python3 $path_to_src_files/send_process_stat_req.py IQ_RPI_INPUTBUTTON_$pi_reference
-python3 $path_to_src_files/send_process_stat_req.py IQ_RPI_OUTPUTLIGHTS_$pi_reference
-python3 $path_to_src_files/send_process_stat_req.py IQ_RPI_OUTPUTRELAY_$pi_reference
-python3 $path_to_src_files/send_process_stat_req.py IQ_RPI_OUTPUTDIMMER_$pi_reference
+python3 $path_to_src_files/send_process_stat_req.py IQ_RPI_LIGHTSIMULATOR_$pi_reference
 
 deactivate
