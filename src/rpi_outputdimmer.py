@@ -10,11 +10,14 @@ Licence:
 '''
 from rpi_processframework import RPiProcessFramework
 from rpi_piface import RPiPiface
+import json
+
 
 class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
     '''
     Class Name:   RPiOutputDimmer
     '''
+
     def __init__(self):
         # Initialize process framework attributes so we can start using them
         RPiProcessFramework.__init__(self, default_log_level='INFO')
@@ -25,17 +28,19 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
             self.logger_instance.critical(
                 "RPiOutputDimmer - No PiFace boards detected. \
                 Unable to process input signals"
-                )
+            )
             self.run_process = False    # No need to continue
         elif self.get_number_of_boards() == 4:
-            self.logger_instance.info("RPiOutputDimmer - Four PiFace boards detected")
+            self.logger_instance.info(
+                "RPiOutputDimmer - Four PiFace boards detected")
         else:
             self.logger_instance.warning(
-                "RPiOutputDimmer - Potentially not all PiFace boards detected." +\
+                "RPiOutputDimmer - Potentially not all PiFace boards detected." +
                 "Address of last detected board = {}".format(self.get_number_of_boards()-1))
 
         # Initialize the output dimmer dictionary
-        self.output_dimmer = self.create_output_dimmer_list(self.process_attributes.__repr__())
+        self.output_dimmer = self.create_output_dimmer_list(
+            self.process_attributes.__repr__())
         # Initialize the process logic dictionary
         self.process_logic = self.create_process_logic_dictionary()
 
@@ -114,14 +119,14 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
                             logic_list]  # Timestamp when pulse status was change
                         self.logger_instance.debug(
                             "RPiOutputDimmer - create_output_dimmer_list - Dimmer: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Description: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - Logic: {}".format(
                                 reply[attribute_key][2])
-                            )
+                        )
 
         return reply
 
@@ -148,7 +153,7 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
                     self.logger_instance.debug(
                         "RPIOutputDimmer - create_process_logic_dictionary - " +
                         "Processing logic_list {}: {}".format(input_reference, action))
-                    if input_reference in logic_dictionary: # pylint: disable=consider-using-get
+                    if input_reference in logic_dictionary:  # pylint: disable=consider-using-get
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
@@ -209,22 +214,26 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
         '''
         reply = True    # We assume we keep going
 
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received
+        self.logger_instance.debug(
+            f"RPiOutputDimmer - Processing Message {message}")
+
+        event_message = json.loads(message)
+
+        # A process related message was received
+        if event_message["Type"] == "Processing":
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the output_dimmer list to update any
             # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and event_message["Event"] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.output_dimmer = self.create_output_dimmer_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
-        elif message_list[0] == "I":  # An input button related message was received
+        # An input button related message was received
+        elif event_message["Type"] == "Input":
             self.logger_instance.debug(
-                "RPIOutputDimmer - Input button message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_input_button_message(message_list[1])
+                f"RPIOutputDimmer - {event_message['Event']} event received")
+            self.parse_input_button_message(event_message['Event'])
 
         return reply
 
@@ -240,6 +249,8 @@ class RPiOutputDimmer(RPiProcessFramework, RPiPiface):
                 self.set_output_pin(board_number, pin_number)
             else:
                 self.reset_output_pin(board_number, pin_number)
+
+
 def main():
     '''
     Initiating the RPiOutputDimmer process
@@ -252,6 +263,7 @@ def main():
             output_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 output_handler_instance.process_message,
                 output_handler_instance.process_output_dimmer)
+
 
 if __name__ == '__main__':
     main()

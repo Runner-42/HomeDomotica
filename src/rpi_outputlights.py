@@ -9,6 +9,7 @@ Copyright:	(c) Wim 2018
 Licence:
 '''
 import time
+import json
 
 from rpi_processframework import RPiProcessFramework
 from rpi_piface import RPiPiface

@@ -12,6 +12,7 @@ Licence:
 '''
 
 import time
+import json
 from rpi_piface import RPiPiface
 
 from rpi_processframework import RPiProcessFramework
