@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import pika
+import json
 
 if len(sys.argv) == 2:
     queue_name = sys.argv[1]
@@ -11,17 +12,19 @@ elif len(sys.argv) == 3:
 else:
     print("Usage send_set_loglevel_req.py <Queue Name> <Log level (Default=INFO)>")
 
+message = {"Type": "Processing",
+           "Event": "SET_LOG_LEVEL",
+           "Loglevel": log_level}
 
-event = "P;SET_LOG_LEVEL;" + log_level
-
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 
 channel.queue_declare(queue=queue_name)
 
 channel.basic_publish(exchange='HOMEDOMOTICA',
                       routing_key=queue_name,
-                      body=event)
+                      body=json.dumps(message))
 
-print(" [x] Sent", event, " to", queue_name)
+print(" [x] Sent", json.dumps(message), " to", queue_name)
 connection.close()

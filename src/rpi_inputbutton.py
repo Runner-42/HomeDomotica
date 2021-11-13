@@ -453,9 +453,17 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         if event_message["Type"] == "Processing":
             self.logger_instance.debug(
                 f"RPiInputButton - {event_message['Type']} Message received")
-            if event_message["Event"] == "PRINT_PROCESSING_STATUS":
+            reply = super().process_message(message)
+            # When the process attribute list has been refreshed
+            # It's also necessary to refresh the inputbutton list to update any
+            # changes
+            if reply is True and event_message["Event"] == "REFRESH_PROCESS_ATTRIBUTES":
                 self.logger_instance.debug(
                     f"RPiInputButton - {event_message['Event']} event received")
+                self.input_buttons = self.create_inputbutton_list(
+                    self.process_attributes.__repr__())
+                self.process_consumers = self.create_message_senders(
+                    self.process_attributes.__repr__())
 
         message_list = message.split(";")
         if message_list[0] == "P":  # A process related message was received,

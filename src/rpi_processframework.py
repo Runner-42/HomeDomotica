@@ -17,12 +17,14 @@ Licence:
 
 import argparse
 import time
+import json
 
 
 import rpi_logger
 from rpi_processattributes import RPiProcessAttributes
 from rpi_homedomoticaconfigurationfile import RPiHomedomoticaConfigurationFile
 from rpi_messageconsumer import RPiMessageConsumer
+
 
 class RPiProcessFramework():
     '''
@@ -48,7 +50,7 @@ class RPiProcessFramework():
         # Set variable to indicate the process should be running
         self.run_process = True
 
-        #Initiate process attribute dictionary
+        # Initiate process attribute dictionary
         self.process_attributes = RPiProcessAttributes()
 
         # Parse command line arguments
@@ -58,19 +60,21 @@ class RPiProcessFramework():
         self.process_attributes.push_item({"ProcessName": parser.prog[:-3]})
 
         # => check if an input queue name is provided as a parameter.
-        #If not, use process name as basis for the queue name
+        # If not, use process name as basis for the queue name
         parser.add_argument(
             "-q",
             nargs="?",
             type=str,
-            const="IQ_"+str.upper(self.process_attributes.get_item("ProcessName")),
-            default="IQ_"+str.upper(self.process_attributes.get_item("ProcessName")),
+            const="IQ_" +
+            str.upper(self.process_attributes.get_item("ProcessName")),
+            default="IQ_" +
+            str.upper(self.process_attributes.get_item("ProcessName")),
             action="store",
             dest="input_queue_name",
             help="Input queue name (default is set to the process name, prefixed by IQ_"
-            )
+        )
         # => check if a name for the configuration file is provided as a parameter.
-        #If not, use the default name <process_name>.cfg
+        # If not, use the default name <process_name>.cfg
         parser.add_argument(
             "-cf",
             nargs="?",
@@ -80,9 +84,9 @@ class RPiProcessFramework():
             action="store",
             dest="config_file_name",
             help="Name of the process configuration file (Deault value is <process name>.cfg)."
-            )
+        )
         # => check if a location for the configuration file is provided as a parameter.
-        #If not, use the default location /home/homedomotica
+        # If not, use the default location /home/homedomotica
         parser.add_argument(
             "-cfp",
             nargs="?",
@@ -92,9 +96,9 @@ class RPiProcessFramework():
             action="store",
             dest="config_file_path",
             help="Path to the process configuration file (Default value is /home/homedomotica)."
-            )
+        )
         # => check if a log level is provided as a parameter.
-        #If not, use the default log level 'INFO'
+        # If not, use the default log level 'INFO'
         parser.add_argument(
             "-l",
             nargs="?",
@@ -103,7 +107,7 @@ class RPiProcessFramework():
             action="store",
             dest="process_log_level",
             help="Process log level (Deault value is 'INFO')."
-            )
+        )
 
         if parser.parse_args().process_log_level:
             default_log_level = parser.parse_args().process_log_level
@@ -123,39 +127,41 @@ class RPiProcessFramework():
             "{} - Push 'ProcessName = {}' to process attribute dictionary".format(
                 __name__,
                 parser.prog[:-3])
-            )
+        )
 
         # Add the parameters to the process attributes dictionary
-        self.process_attributes.push_item({"InputQueueName": parser.parse_args().input_queue_name})
+        self.process_attributes.push_item(
+            {"InputQueueName": parser.parse_args().input_queue_name})
         self.logger_instance.debug(
             "{} - Push 'InputQueueName = {}' to process attribute dictionary".format(
                 __name__,
                 self.process_attributes.get_item("InputQueueName")
-                )
             )
+        )
         self.process_attributes.push_item(
             {"ConfigFileName": str.lower(parser.parse_args().config_file_name)})
         self.logger_instance.debug(
             "{} - Push 'ConfigFileName = {}' to process attribute dictionary".format(
                 __name__,
                 self.process_attributes.get_item("ConfigFileName")
-                )
             )
-        self.process_attributes.push_item({"ConfigFilePath": parser.parse_args().config_file_path})
+        )
+        self.process_attributes.push_item(
+            {"ConfigFilePath": parser.parse_args().config_file_path})
         self.logger_instance.debug(
             "{} - Push 'ConfigFilePath = {}' to process attribute dictionary".format(
                 __name__,
                 self.process_attributes.get_item("ConfigFilePath")
-                )
             )
+        )
         self.process_attributes.push_item(
             {"ProcessLogLevel": parser.parse_args().process_log_level})
         self.logger_instance.debug(
             "{} - Push 'ProcessLogLevel = {}' to process attribute dictionary".format(
                 __name__,
                 self.process_attributes.get_item("ProcessLogLevel")
-                )
             )
+        )
 
         # Initialize process configuration file
         # Name of the config file is set to the process name (lower case) and file extension .cfg
@@ -165,10 +171,12 @@ class RPiProcessFramework():
         self.refresh_process_attributes()
 
         # Initialize Input Queue so we can receive messages
-        input_queue_configuration = {'queueName':\
-                                        self.process_attributes.get_item("InputQueueName"),
-                                     'routingKey':\
-                                        self.process_attributes.get_item("InputQueueName"),
+        input_queue_configuration = {'queueName':
+                                     self.process_attributes.get_item(
+                                         "InputQueueName"),
+                                     'routingKey':
+                                     self.process_attributes.get_item(
+                                         "InputQueueName"),
                                      'exchangeName': 'HOMEDOMOTICA',
                                      'host': 'localhost',
                                      'exchangeType': 'direct',
@@ -189,7 +197,8 @@ class RPiProcessFramework():
 
     def __str__(self):
         long_string = ""
-        long_string += "Process Name: {}\n".format(self.process_attributes.get_item("ProcessName"))
+        long_string += "Process Name: {}\n".format(
+            self.process_attributes.get_item("ProcessName"))
         long_string += "Input Queue Name: {}\n".format(
             self.process_attributes.get_item("InputQueueName"))
         long_string += self.logger_instance.__str__()
@@ -200,11 +209,11 @@ class RPiProcessFramework():
     def __repr__(self):
         long_string = ""
         long_string += self.process_attributes.get_item("ProcessName") + " " +\
-                       str(self.run_process) + " " +\
-                       self.process_attributes.get_item("InputQueueName")
+            str(self.run_process) + " " +\
+            self.process_attributes.get_item("InputQueueName")
         return long_string
 
-    def process_message(self, message): # pylint: disable=too-many-branches
+    def process_message(self, message):  # pylint: disable=too-many-branches
         '''
         Function responsible to handle messages coming from the process
         input queue which are specific to the process.
@@ -227,6 +236,39 @@ class RPiProcessFramework():
 
         reply = True   # Assuming we don't need to stop processing
 
+        event_message = json.loads(message)
+        self.logger_instance.debug(
+            f"{format(__name__)} - {event_message['Type']} Message received")
+        self.logger_instance.debug(
+            f"{__name__} - {event_message['Event']} event received")
+        if event_message["Type"] == "Processing":
+            if event_message["Event"] == "STOP":
+                reply = False
+            elif event_message["Event"] == "PRINT_PROCESS_STATUS":
+                self.logger_instance.info(
+                    f"Process Status:\n{self.__str__()}")
+            elif event_message["Event"] == "ENABLE_CONSOLE_LOGGING":
+                self.logger_instance.enable_console_logging()
+            elif event_message["Event"] == "DISABLE_CONSOLE_LOGGING":
+                self.logger_instance.disable_console_logging()
+            elif event_message["Event"] == "ENABLE_LOGFILE_LOGGING":
+                self.logger_instance.enable_logfile_logging()
+            elif event_message["Event"] == "DISABLE_LOGFILE_LOGGING":
+                self.logger_instance.disable_logfile_logging()
+            elif event_message["Event"] == "ENABLE_SYSLOG_LOGGING":
+                self.logger_instance.enable_syslog_logging()
+            elif event_message["Event"] == "DISABLE_SYSLOG_LOGGING":
+                self.logger_instance.disable_syslog_logging()
+            elif event_message["Event"] == "REFRESH_PROCESS_ATTRIBUTES":
+                self.refresh_process_attributes()
+            elif event_message["Event"] == "SET_LOG_LEVEL":
+                if event_message["Loglevel"] in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+                    self.logger_instance.set_log_level(
+                        event_message["Loglevel"])
+            else:
+                self.logger_instance.warning(
+                    f"{__name__} - Unknown process message '{event_message['Type']}' received on queue {self.process_attributes.get_item('InputQueueName')}")
+
         message_list = message.split(";")
         if message_list[0] == "P":  # We first check it is an actual process message
             if message_list[1] == "STOP":
@@ -248,7 +290,8 @@ class RPiProcessFramework():
                    message_list[2] in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
                     self.logger_instance.set_log_level(message_list[2])
             elif message_list[1] == "PRINT_PROCESS_STATUS":
-                self.logger_instance.info("Process Status:\n{}".format(self.__str__()))
+                self.logger_instance.info(
+                    "Process Status:\n{}".format(self.__str__()))
             elif message_list[1] == "REFRESH_PROCESS_ATTRIBUTES":
                 self.refresh_process_attributes()
             else:
@@ -282,8 +325,10 @@ class RPiProcessFramework():
         self.process_attributes.push_item({"InputQueueName": iq_name})
 
         # Read configuration file and add all items to the dictionary
-        block = "[" + str.upper(self.process_attributes.get_item("ProcessName")) + "]"
-        self.process_attributes.push_item(self.config_file.read_configuration_file(block))
+        block = "[" + \
+            str.upper(self.process_attributes.get_item("ProcessName")) + "]"
+        self.process_attributes.push_item(
+            self.config_file.read_configuration_file(block))
         if self.config_file.invalid_config_file is True:
             self.logger_instance.critical(
                 "{} - Invalid entries found in config file {} - {}".format(
@@ -298,6 +343,7 @@ class RPiProcessFramework():
         '''
         pass
 
+
 def main():
     '''
     used mainly for testing purposes
@@ -311,6 +357,7 @@ def main():
                 process_instance.process_message,
                 process_instance.no_message_received_process)
         time.sleep(0.5)
+
 
 if __name__ == '__main__':
     main()
