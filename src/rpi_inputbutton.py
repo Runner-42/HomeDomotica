@@ -15,6 +15,7 @@ from rpi_processframework import RPiProcessFramework
 from rpi_piface import RPiPiface
 from rpi_messagesender import RPiMessageSender
 
+
 class RPiInputButton(RPiProcessFramework, RPiPiface):
     '''
     This class is created to handle the Input Buttons available on a piface board
@@ -58,20 +59,23 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
             self.logger_instance.critical(
                 "RPiInputButton - No PiFace boards detected. \
                 Unable to process input signals"
-                )
+            )
             self.run_process = False    # No need to continue
         elif self.get_number_of_boards() == 4:
-            self.logger_instance.info("RPiInputButton - Four PiFace boards detected")
+            self.logger_instance.info(
+                "RPiInputButton - Four PiFace boards detected")
         else:
             self.logger_instance.warning(
-                "RPiInputButton - Potentially not all PiFace boards detected." +\
+                "RPiInputButton - Potentially not all PiFace boards detected." +
                 "Address of last detected board = {}".format(self.get_number_of_boards()-1))
 
         # Initialize the input buttons dictionary
-        self.input_buttons = self.create_inputbutton_list(self.process_attributes.__repr__())
+        self.input_buttons = self.create_inputbutton_list(
+            self.process_attributes.__repr__())
 
         # Initialize message sender handles so we can send messages
-        self.process_consumers = self.create_message_senders(self.process_attributes.__repr__())
+        self.process_consumers = self.create_message_senders(
+            self.process_attributes.__repr__())
 
         # Initialize the message sender handler
         output_queue_configuration = {'exchangeName': 'HOMEDOMOTICA',
@@ -143,24 +147,24 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             0]  # ButtonPressedCount
                         self.logger_instance.debug(
                             "RPiInputButton - Initializing input_button: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Previous State: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - Description: {}".format(
-                                reply[attribute_key][2]) +\
+                                reply[attribute_key][2]) +
                             " - Consumer: {}".format(
-                                reply[attribute_key][3]) +\
+                                reply[attribute_key][3]) +
                             " - Signal Up Timestamp: {}".format(
-                                reply[attribute_key][4]) +\
+                                reply[attribute_key][4]) +
                             " - Signal Down Timestamp: {}".format(
-                                reply[attribute_key][5]) +\
+                                reply[attribute_key][5]) +
                             " - Previous Signal Down Timestamp: {}".format(
-                                reply[attribute_key][6]) +\
+                                reply[attribute_key][6]) +
                             " - Button Pressed Count: {}".format(
                                 reply[attribute_key][7])
-                            )
+                        )
 
         return reply
 
@@ -177,7 +181,8 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
             queue_list = []
             try:
                 for consumer in consumer_list:
-                    queue_list.append(process_attribute_list[str(consumer).lstrip().rstrip()])
+                    queue_list.append(
+                        process_attribute_list[str(consumer).lstrip().rstrip()])
                 process_consumer_queue[key] = queue_list
                 self.logger_instance.debug(
                     "RPiInputButton - Initializing process_consumers {} = {}".format(
@@ -186,11 +191,11 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                 process_consumer_queue[key] = []
                 self.logger_instance.warning(
                     "RPiInputButton - Invalide queue reference '{}' for input button {}. ".format(
-                        consumer, key) +\
-                    "No events are created for this input button! " +\
+                        consumer, key) +
+                    "No events are created for this input button! " +
                     "Check {}!".format(str.lower(self.process_attributes.get_item(
                         "ProcessName")) + ".cfg")
-                    )
+                )
 
         return process_consumer_queue
 
@@ -360,7 +365,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             _get_board_number(key),
                             _get_pin_number(key),
                             self._get_button_description(key))
-                        )
+                    )
                     # TO-DO: Add code to send "UP-event" message to consummer queue(s)
                     self.process_output_queue_handler.send_message(
                         self.process_consumers[key], message_pre_able+"UP")
@@ -372,7 +377,7 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             _get_board_number(key),
                             _get_pin_number(key),
                             self._get_button_description(key))
-                        )
+                    )
                     # TO-DO: Add code to send "DOWN-event" message to consummer queue(s)
                     self.process_output_queue_handler.send_message(
                         self.process_consumers[key], message_pre_able+"DOWN")
@@ -427,7 +432,8 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             self._reset_button_presscount(key)
 
                 #  set "Previous state" to current state
-                self._set_previous_button_state(key, self._get_button_state(key))
+                self._set_previous_button_state(
+                    key, self._get_button_state(key))
 
     def process_message(self, message):
         '''
@@ -438,6 +444,9 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         - False: STOP event received
         '''
         reply = True    # We assume we keep going
+
+        self.logger_instance.debug(
+            f"RPiInputButton - Processing Message {message}")
 
         message_list = message.split(";")
         if message_list[0] == "P":  # A process related message was received,
@@ -453,17 +462,20 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
 
         return reply
 
+
 def _get_board_number(key):
     '''
     function that retrieves the button board number
     '''
     return int(key[1])
 
+
 def _get_pin_number(key):
     '''
     function that retrieves the button board number
     '''
     return int(key[3])
+
 
 def main():
     '''
@@ -478,6 +490,7 @@ def main():
             input_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 input_handler_instance.process_message,
                 input_handler_instance.process_input_buttons)
+
 
 if __name__ == '__main__':
     main()
