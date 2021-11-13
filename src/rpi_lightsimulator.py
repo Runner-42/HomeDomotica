@@ -11,9 +11,11 @@ Licence:
 
 import schedule
 import time
+import json
 
 from rpi_processframework import RPiProcessFramework
 from rpi_messagesender import RPiMessageSender
+
 
 class RPiLightSimulator(RPiProcessFramework):
     '''
@@ -36,10 +38,12 @@ class RPiLightSimulator(RPiProcessFramework):
         RPiProcessFramework.__init__(self, default_log_level='INFO')
 
         # Initialize the schedule dictionary
-        self.schedule_dict = self.create_schedule_dict(self.process_attributes.__repr__())
+        self.schedule_dict = self.create_schedule_dict(
+            self.process_attributes.__repr__())
 
         # Initialize message sender handles so we can send messages
-        self.process_consumers = self.create_message_senders(self.process_attributes.__repr__())
+        self.process_consumers = self.create_message_senders(
+            self.process_attributes.__repr__())
 
         # Initialize the message sender handler
         output_queue_configuration = {'exchangeName': 'HOMEDOMOTICA',
@@ -66,7 +70,7 @@ class RPiLightSimulator(RPiProcessFramework):
                 long_string += "{} = {}\n".format(key, value)
         else:
             long_string += "No process consumer dictionary found!\n"
-            
+
         long_string += "Scheduled jobs:\n"
         long_string += str(schedule.jobs)
 
@@ -119,7 +123,8 @@ class RPiLightSimulator(RPiProcessFramework):
             for schedule_list in value:
                 try:
                     queue = self.get_message_queue(schedule_list)
-                    process_consumer_queue[queue] = process_attribute_list[str(queue).lstrip().rstrip()].split()
+                    process_consumer_queue[queue] = process_attribute_list[str(
+                        queue).lstrip().rstrip()].split()
                     self.logger_instance.debug(
                         "RPiLightSimulator - Initializing message queue {} = {}".format(
                             queue, process_consumer_queue[queue]))
@@ -127,11 +132,11 @@ class RPiLightSimulator(RPiProcessFramework):
                     process_consumer_queue[queue] = []
                     self.logger_instance.warning(
                         "RPiLightSimulator - Invalide queue reference '{}' for scenario '{}'. ".format(
-                            queue, key) +\
-                        "At least 1 queue reference is not created for this scenario! " +\
+                            queue, key) +
+                        "At least 1 queue reference is not created for this scenario! " +
                         "Check {}!".format(str.lower(self.process_attributes.get_item(
                             "ProcessName")) + ".cfg")
-                        )
+                    )
 
         return process_consumer_queue
 
@@ -156,7 +161,7 @@ class RPiLightSimulator(RPiProcessFramework):
         # We will read each Simulation key and add it to the schedule dictionary
         # with the scenario as key
         # It is assumed that the first counter value is 00 and the maximum is 99
-        
+
         for counter in range(100):
             key = "Simulation" + format(counter, '02')
             if key in process_attribute_list:
@@ -164,9 +169,9 @@ class RPiLightSimulator(RPiProcessFramework):
                 if value[0:8] != "Not Used":
                     try:
                         scenario,\
-                        activate_time, activate_event,\
-                        inactivate_time, inactivate_event,\
-                        message_queue = value.split(";")
+                            activate_time, activate_event,\
+                            inactivate_time, inactivate_event,\
+                            message_queue = value.split(";")
 
                         scenario_list_item = [
                             activate_time,
@@ -175,7 +180,7 @@ class RPiLightSimulator(RPiProcessFramework):
                             inactivate_event,
                             message_queue]
 
-                        if scenario in reply: # pylint: disable=consider-using-get
+                        if scenario in reply:  # pylint: disable=consider-using-get
                             scenario_list = reply[scenario]
                         else:
                             scenario_list = []
@@ -185,7 +190,7 @@ class RPiLightSimulator(RPiProcessFramework):
 
                         self.logger_instance.debug(
                             "RPILightSimulator - Adding key {} with value {} to schedule dictionary".
-                                format(scenario, reply[scenario]))
+                            format(scenario, reply[scenario]))
                     except KeyError:
                         self.logger_instance.warning(
                             "RPILightSimulator - Unknow scenario found {} -> {}".format(key, value))
@@ -193,37 +198,41 @@ class RPiLightSimulator(RPiProcessFramework):
                         self.logger_instance.warning(
                             "RPILightSimulator - Invalid scenario information found {} -> {}".format(key, value))
 
-        return reply            
+        return reply
 
     def execute_schedule_job(self, message, message_queue):
-       '''
-       This job is run for every action triggered in the scheduler
-       It will send a message to the message queue
-       Note format of a light simulator message is S;<message>
-       '''
-       self.process_output_queue_handler.send_message(
-                                self.process_consumers[message_queue],
-                                "S;"+message)
-       self.logger_instance.info(
-            "RPILightSimulator - Send message {} to queue {}".format(message, self.process_consumers[message_queue]))
+        '''
+        This job is run for every action triggered in the scheduler
+        It will send a message to the message queue
+        Note format of a light simulator message is {"Type": "Simulation",
+                                                     "Event": <message>}
+        '''
+        data = {"Type": "Simulation",
+                "Event": message}
+        json_data = json.dumps(data)
+        self.process_output_queue_handler.send_message(
+            self.process_consumers[message_queue],
+            json_data)
+        self.logger_instance.info(
+            f"RPILightSimulator - Send {message} event to queue {self.process_consumers[message_queue]}")
 
     def activate_scenario(self, scenario):
         '''
         Activation of a scenario will add all actions to the schedule queue
         in the list included in the schedule_dict dictionary with 'scenario' as key
         '''
-        
+
         # To avoid double entries of the same scenario, for example when executing
         # the activate event more than once, clear any existing entries of this scenario
         schedule.clear(scenario)
-        
+
         for schedule_list in self.schedule_dict[scenario]:
             activation_date = self.get_activation_date(schedule_list)
             activation_event = self.get_activation_event(schedule_list)
             inactivation_date = self.get_inactivation_date(schedule_list)
             inactivation_event = self.get_inactivation_event(schedule_list)
             message_queue = self.get_message_queue(schedule_list)
-            
+
             activation_days, activation_time = activation_date.split()
             if activation_days == '*':
                 schedule.every().day.at(activation_time).do(self.execute_schedule_job,
@@ -231,45 +240,45 @@ class RPiLightSimulator(RPiProcessFramework):
                                                             message_queue).tag(scenario)
                 self.logger_instance.debug(
                     "RPILightSimulator - activating message {} every day at {} to {}".format(
-                                    activation_event,
-                                    activation_time,
-                                    message_queue))
+                        activation_event,
+                        activation_time,
+                        message_queue))
             else:
                 for day in activation_days.split(','):
                     if day == "Monday":
                         schedule.every().monday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                       activation_event,
+                                                                       message_queue).tag(scenario)
                     elif day == "Tuesday":
                         schedule.every().tuesday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                        activation_event,
+                                                                        message_queue).tag(scenario)
                     elif day == "Wednesday":
                         schedule.every().wednesday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                          activation_event,
+                                                                          message_queue).tag(scenario)
                     elif day == "Thursday":
                         schedule.every().thursday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                         activation_event,
+                                                                         message_queue).tag(scenario)
                     elif day == "Friday":
                         schedule.every().friday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                       activation_event,
+                                                                       message_queue).tag(scenario)
                     elif day == "Saterday":
                         schedule.every().saturday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                         activation_event,
+                                                                         message_queue).tag(scenario)
                     elif day == "Sunday":
                         schedule.every().sunday.at(activation_time).do(self.execute_schedule_job,
-                                                                   activation_event,
-                                                                   message_queue).tag(scenario)
+                                                                       activation_event,
+                                                                       message_queue).tag(scenario)
                     self.logger_instance.debug(
                         "RPILightSimulator - activating message {} every {} at {} to {}".format(
-                                    activation_event,
-                                    day,
-                                    activation_time,
-                                    message_queue))
+                            activation_event,
+                            day,
+                            activation_time,
+                            message_queue))
 
             inactivation_days, inactivation_time = inactivation_date.split()
             if inactivation_days == '*':
@@ -278,45 +287,45 @@ class RPiLightSimulator(RPiProcessFramework):
                                                               message_queue).tag(scenario)
                 self.logger_instance.debug(
                     "RPILightSimulator - activating message {} every day at {} to {}".format(
-                                    inactivation_event,
-                                    inactivation_time,
-                                    message_queue))
+                        inactivation_event,
+                        inactivation_time,
+                        message_queue))
             else:
                 for day in inactivation_days.split(','):
                     if day == "Monday":
                         schedule.every().monday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                         inactivation_event,
+                                                                         message_queue).tag(scenario)
                     elif day == "Tuesday":
                         schedule.every().tuesday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                          inactivation_event,
+                                                                          message_queue).tag(scenario)
                     elif day == "Wednesday":
                         schedule.every().wednesday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                            inactivation_event,
+                                                                            message_queue).tag(scenario)
                     elif day == "Thursday":
                         schedule.every().thursday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                           inactivation_event,
+                                                                           message_queue).tag(scenario)
                     elif day == "Friday":
                         schedule.every().friday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                         inactivation_event,
+                                                                         message_queue).tag(scenario)
                     elif day == "Saterday":
                         schedule.every().saturday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                           inactivation_event,
+                                                                           message_queue).tag(scenario)
                     elif day == "Sunday":
                         schedule.every().sunday.at(inactivation_time).do(self.execute_schedule_job,
-                                                                   inactivation_event,
-                                                                   message_queue).tag(scenario)
+                                                                         inactivation_event,
+                                                                         message_queue).tag(scenario)
                     self.logger_instance.debug(
                         "RPILightSimulator - activating message {} every {} at {} to {}".format(
-                                    inactivation_event,
-                                    day,
-                                    inactivation_time,
-                                    message_queue))
+                            inactivation_event,
+                            day,
+                            inactivation_time,
+                            message_queue))
 
     def deactivate_scenario(self, scenario):
         '''
@@ -334,10 +343,10 @@ class RPiLightSimulator(RPiProcessFramework):
         - ACTIVATE
         - DEACTIVATE
         Other actions are ignored
-        
+
         These actions are expected to be passed with 1 parameter.
         This parameter represents the scenario to be activated.
-        
+
         Correct syntax of the message is "ACTIVATE|<scenario>" or
         "DEACTIVATE|<scenario>"
         '''
@@ -376,23 +385,28 @@ class RPiLightSimulator(RPiProcessFramework):
         '''
         reply = True    # We assume we keep going
 
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received
+        self.logger_instance.debug(
+            f"RPiLightSimulator - Processing Message {message}")
+
+        event_message = json.loads(message)
+        # A process related message was received
+        if event_message["Type"] == "Processing":
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the lightsimulator list to process any
             # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and event_message["Event"] == 'REFRESH_PROCESS_ATTRIBUTES':
+                self.logger_instance.debug(
+                    f"RPiLightSimulator - {event_message['Event']} event received")
                 self.schedule_dict = self.create_schedule_dict(
                     self.process_attributes.__repr__())
                 self.process_consumers = self.create_message_senders(
                     self.process_attributes.__repr__())
-        elif message_list[0] == "S":  # A Simulation message was received
+        # A Simulation message was received
+        elif event_message["Type"] == "Simulation":
             self.logger_instance.debug(
-                "RPILightSimulator - Parsing Simulation message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_simulation_message(message_list[1])
+                f"RPILightSimulator - Parsing Simulation event - {event_message['Event']}")
+            self.parse_simulation_message(event_message['Event'])
 
         return reply
 
@@ -417,6 +431,7 @@ def main():
             lightsimulator_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 lightsimulator_handler_instance.process_message,
                 lightsimulator_handler_instance.process_simulation_message)
+
 
 if __name__ == '__main__':
     main()

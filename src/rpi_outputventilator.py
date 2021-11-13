@@ -16,6 +16,7 @@ from rpi_piface import RPiPiface
 
 from rpi_processframework import RPiProcessFramework
 
+
 class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
     '''
     This class is created to handle the Ventilator objects using the Output Relays available
@@ -64,31 +65,36 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                                  Value = 0 means that now timer is used. Stopping the Ventilator
                                  is handled externally
     '''
+
     def __init__(self):
         # Initialize process framework attributes so we can start using them
         RPiProcessFramework.__init__(self, default_log_level='INFO')
 
         # Initialize all installed PiFace boards
-        self.logger_instance.debug("RPiOutputVentilator - Initializing PiFace boards")
+        self.logger_instance.debug(
+            "RPiOutputVentilator - Initializing PiFace boards")
         RPiPiface.__init__(self)
         # Let's share some log information
         if RPiPiface.get_number_of_boards(self) == 0:
             self.logger_instance.critical(
                 "RPiOutputVentilator - No PiFace boards detected. \
                 Unable to process input signals"
-                )
+            )
             self.run_process = False    # No need to continue
         elif RPiPiface.get_number_of_boards(self) == 1:
-            self.logger_instance.info("RPiOutputVentilator - One PiFace boards detected")
+            self.logger_instance.info(
+                "RPiOutputVentilator - One PiFace boards detected")
         else:
             self.logger_instance.warning(
-                "RPiOutputVentilator - More than one PiFace board detected." +\
+                "RPiOutputVentilator - More than one PiFace board detected." +
                 "Address of last detected board = {}".format(RPiPiface.get_number_of_boards(self)-1))
 
         # Initialize the output relay dictionary
-        self.output_relays = self.create_output_relay_list(self.process_attributes.__repr__())
+        self.output_relays = self.create_output_relay_list(
+            self.process_attributes.__repr__())
         # Initialize the relay timer dictionary
-        self.relays_timer = self.create_relay_timer_list(self.process_attributes.__repr__())
+        self.relays_timer = self.create_relay_timer_list(
+            self.process_attributes.__repr__())
         # Initialize the process logic dictionary
         self.process_logic = self.create_process_logic_dictionary()
 
@@ -100,7 +106,8 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
 
     def __str__(self):
         long_string = RPiProcessFramework.__str__(self)
-        long_string += "Number of PiFace boards detected: {}\n".format(RPiPiface.get_number_of_boards(self))
+        long_string += "Number of PiFace boards detected: {}\n".format(
+            RPiPiface.get_number_of_boards(self))
         if self.output_relays != {}:
             long_string += "output_relays:\n"
             for key, value in self.output_relays.items():
@@ -274,18 +281,18 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                             0]  # Timestamp when pulse status was change
                         self.logger_instance.debug(
                             "RPiOutputVentilator - Initializing output_relay: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Description: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - Logic: {}".format(
-                                reply[attribute_key][2]) +\
+                                reply[attribute_key][2]) +
                             " - Pulse: {}".format(
-                                reply[attribute_key][3]) +\
+                                reply[attribute_key][3]) +
                             " - Pulse Time Stamp: {}".format(
                                 reply[attribute_key][4])
-                            )
+                        )
 
         return reply
 
@@ -316,23 +323,23 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                             description,
                             int(lagtime),
                             int(runtime),
-                            0, # start_time
-                            0] # stop_time
+                            0,  # start_time
+                            0]  # stop_time
                         self.logger_instance.debug(
                             "RPiOutputVentilator - Initializing relay_timer: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Description: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - LagTime: {}".format(
-                                reply[attribute_key][2]) +\
+                                reply[attribute_key][2]) +
                             " - RunTime: {}".format(
                                 reply[attribute_key][3])
-                            )
+                        )
 
         return reply
-        
+
     def create_process_logic_dictionary(self):
         '''
         This method creates a process logic dictionary based on an active output relay list
@@ -349,14 +356,14 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                 for items in logic_list:
                     input_reference, action = items.split('|')
                     action_list_item = [key, action]
-                    if input_reference in logic_dictionary: # pylint: disable=consider-using-get
+                    if input_reference in logic_dictionary:  # pylint: disable=consider-using-get
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
                     self.logger_instance.debug(
                         "RPiOutputVentilator - Adding item to process logic list {}: {}".format(
-                                                                                           input_reference,
-                                                                                           action_list_item))
+                            input_reference,
+                            action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
 
@@ -369,9 +376,11 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
         '''
         for key in self.output_relays:
             if self._get_state(key) == 0:
-                RPiPiface.reset_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
+                RPiPiface.reset_output_relay(
+                    self, self._get_board_number(key), self._get_relay_number(key))
             else:
-                RPiPiface.set_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
+                RPiPiface.set_output_relay(self, self._get_board_number(
+                    key), self._get_relay_number(key))
 
     def parse_input_button_message(self, message):
         '''
@@ -393,7 +402,8 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                                 relay_key,
                                 self._get_description(relay_key)))
                         self._set_relaytimer_state(relay_key, 1)
-                        self._set_relaytimer_start_timestamp(relay_key, time.time())
+                        self._set_relaytimer_start_timestamp(
+                            relay_key, time.time())
                         # set stop timestamp to 0 to indicate we entered a new run cycle
                         self._set_relaytimer_stop_timestamp(relay_key, 0)
                         self.logger_instance.debug(
@@ -402,15 +412,16 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                                 self._get_relaytimer_description(relay_key),
                                 self._get_relaytimer_starttime(relay_key)))
                     else:
-                    # We don't actually reset the relay state but only set the time we received the
-                    # stop event. Actual resetting of the relay state is handled on a different place
-#                        self._set_state(relay_key, 0)
-#                        self.logger_instance.info(
-#                            "RPiOutputVentilator - Resetting relay {} - {}".format(
-#                                relay_key,
-#                                self._get_description(relay_key)))
-#                        self._set_relaytimer_state(relay_key, 0)
-                        self._set_relaytimer_stop_timestamp(relay_key, time.time())
+                        # We don't actually reset the relay state but only set the time we received the
+                        # stop event. Actual resetting of the relay state is handled on a different place
+                        #                        self._set_state(relay_key, 0)
+                        #                        self.logger_instance.info(
+                        #                            "RPiOutputVentilator - Resetting relay {} - {}".format(
+                        #                                relay_key,
+                        #                                self._get_description(relay_key)))
+                        #                        self._set_relaytimer_state(relay_key, 0)
+                        self._set_relaytimer_stop_timestamp(
+                            relay_key, time.time())
                         self.logger_instance.debug(
                             "RPiOutputVentilator - Stop event received for relay {} - {} at {}".format(
                                 relay_key,
@@ -430,13 +441,18 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
         '''
         reply = True    # We assume we keep going
 
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received
+        self.logger_instance.debug(
+            f"RPiOutputventilator - Processing Message {message}")
+
+        event_message = json.loads(message)
+
+        # A process related message was received
+        if event_message["Type"] == "Processing":
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the outputrelay list to update any
             # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and event_message["Event"] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.logger_instance.debug(
                     "RPiOutputVentilator - Refreshing process attributes")
                 self.output_relays = self.create_output_relay_list(
@@ -444,12 +460,11 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
                 self.relays_timer = self.create_relay_timer_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
-        elif message_list[0] == "I":  # An input button related message was received
+        # An input button related message was received
+        elif event_message["Type"] == "Input":
             self.logger_instance.debug(
-                "RPiOutputVentilator - Parsing input button message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_input_button_message(message_list[1])
+                f"RPIOutputVentilator - {event_message['Event']} event received")
+            self.parse_input_button_message(event_message['Event'])
 
         return reply
 
@@ -479,6 +494,7 @@ class RPiOutputVentilator(RPiProcessFramework, RPiPiface):
 
         self._handle_output_relays()
 
+
 def main():
     '''
     Initiating the RPiOutputVentilator process
@@ -491,6 +507,7 @@ def main():
             output_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 output_handler_instance.process_message,
                 output_handler_instance.process_output_ventilator)
+
 
 if __name__ == '__main__':
     main()

@@ -267,47 +267,7 @@ class RPiProcessFramework():
                         event_message["Loglevel"])
             else:
                 self.logger_instance.warning(
-                    f"{__name__} - Unknown process message '{event_message['Type']}' received on queue {self.process_attributes.get_item('InputQueueName')}")
-
-        message_list = message.split(";")
-        if message_list[0] == "P":  # We first check it is an actual process message
-            if message_list[1] == "STOP":
-                reply = False
-            elif message_list[1] == "ENABLE_CONSOLE_LOGGING":
-                self.logger_instance.enable_console_logging()
-            elif message_list[1] == "DISABLE_CONSOLE_LOGGING":
-                self.logger_instance.disable_console_logging()
-            elif message_list[1] == "ENABLE_LOGFILE_LOGGING":
-                self.logger_instance.enable_logfile_logging()
-            elif message_list[1] == "DISABLE_LOGFILE_LOGGING":
-                self.logger_instance.disable_logfile_logging()
-            elif message_list[1] == "ENABLE_SYSLOG_LOGGING":
-                self.logger_instance.enable_syslog_logging()
-            elif message_list[1] == "DISABLE_SYSLOG_LOGGING":
-                self.logger_instance.disable_syslog_logging()
-            elif message_list[1] == "SET_LOG_LEVEL":
-                if len(message_list) == 3 and\
-                   message_list[2] in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-                    self.logger_instance.set_log_level(message_list[2])
-            elif message_list[1] == "PRINT_PROCESS_STATUS":
-                self.logger_instance.info(
-                    "Process Status:\n{}".format(self.__str__()))
-            elif message_list[1] == "REFRESH_PROCESS_ATTRIBUTES":
-                self.refresh_process_attributes()
-            else:
-                self.logger_instance.warning(
-                    "{} - Unknown process message '{}' received on queue {}".format(
-                        __name__,
-                        message_list[1],
-                        self.process_attributes.get_item("InputQueueName")))
-                return reply
-
-            self.logger_instance.info(
-                "{} - Process message '{}' received on queue {}".format(
-                    __name__,
-                    message_list[1],
-                    self.process_attributes.get_item("InputQueueName")))
-
+                    f"{__name__} - Unknown message type '{event_message['Type']}' received on queue {self.process_attributes.get_item('InputQueueName')}")
         return reply
 
     def refresh_process_attributes(self):

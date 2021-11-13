@@ -13,31 +13,35 @@ import time
 from rpi_processframework import RPiProcessFramework
 from rpi_piface import RPiPiface
 
+
 class RPiOutputLights(RPiProcessFramework, RPiPiface):
     '''
-    
+
     '''
+
     def __init__(self):
         # Initialize process framework attributes so we can start using them
         RPiProcessFramework.__init__(self, default_log_level='INFO')
-    
+
         # We make use of a PiFace, so let's initialize an instance
         RPiPiface.__init__(self)
         if self.get_number_of_boards() == 0:
             self.logger_instance.critical(
                 "RPiOutputLights - No PiFace boards detected. \
                 Unable to process input signals"
-                )
+            )
             self.run_process = False    # No need to continue
         elif self.get_number_of_boards() == 4:
-            self.logger_instance.info("RPiOutputLights - Four PiFace boards detected")
+            self.logger_instance.info(
+                "RPiOutputLights - Four PiFace boards detected")
         else:
             self.logger_instance.warning(
-                "RPiOutputLights - Potentially not all PiFace boards detected." +\
+                "RPiOutputLights - Potentially not all PiFace boards detected." +
                 "Address of last detected board = {}".format(self.get_number_of_boards()-1))
 
         # Initialize the output lights dictionary
-        self.output_lights = self.create_output_lights_list(self.process_attributes.__repr__())
+        self.output_lights = self.create_output_lights_list(
+            self.process_attributes.__repr__())
         # Initialize the process logic dictionary
         self.process_logic = self.create_process_logic_dictionary()
 
@@ -96,7 +100,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         '''
         reply = {}
         self.logger_instance.debug(
-                            "RPiOutputLights - create_output_lights_list - processing attribute list: {}".format(process_attribute_list))
+            "RPiOutputLights - create_output_lights_list - processing attribute list: {}".format(process_attribute_list))
         for board in range(0, self.get_number_of_boards()):
             for pin in range(0, 8):
                 key = "Light" + str(board) + str(pin)
@@ -107,7 +111,7 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                     logic_list = []
                     logic_list = logic.split(',')
                     self.logger_instance.debug(
-                            "RPiOutputLights - create_output_lights_list - processing {}".format(key))
+                        "RPiOutputLights - create_output_lights_list - processing {}".format(key))
                     if description != "Not Used":
                         reply[attribute_key] = [
                             0,  # State
@@ -115,15 +119,15 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                             logic_list]  # Timestamp when pulse status was change
                         self.logger_instance.debug(
                             "RPiOutputLights - create_output_lights_list - lights: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Description: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - Logic: {}".format(
                                 reply[attribute_key][2])
-                            )
-        
+                        )
+
         return reply
 
     def create_process_logic_dictionary(self):
@@ -140,24 +144,24 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 attributes = self.output_lights[key]
                 logic_list = attributes[2]
                 self.logger_instance.debug(
-                        "RPIOutputLights - create_process_logic_dictionary - Processing {}: {}".format(
-                                                                                            key,
-                                                                                            logic_list))
+                    "RPIOutputLights - create_process_logic_dictionary - Processing {}: {}".format(
+                        key,
+                        logic_list))
                 for items in logic_list:
                     input_reference, action = items.split('|')
                     action_list_item = [key, action]
                     self.logger_instance.debug(
                         "RPIOutputLights - create_process_logic_dictionary - Processing logic_list {}: {}".format(
-                                                                                            input_reference,
-                                                                                            action))
-                    if input_reference in logic_dictionary: # pylint: disable=consider-using-get
+                            input_reference,
+                            action))
+                    if input_reference in logic_dictionary:  # pylint: disable=consider-using-get
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
                     self.logger_instance.debug(
                         "RPIOutputLights - create_process_logic_dictionary - Adding item to logic process list {}: {}".format(
-                                                                                            input_reference,
-                                                                                            action_list_item))
+                            input_reference,
+                            action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
         else:
@@ -198,20 +202,20 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 elif light_action == "ON":
                     self._set_state(light_key, 1)
                     self.logger_instance.info(
-                            "RPIOutputLights - Setting light {} - {}".format(
-                                light_key,
-                                self._get_description(light_key)))
+                        "RPIOutputLights - Setting light {} - {}".format(
+                            light_key,
+                            self._get_description(light_key)))
                 elif light_action == "OFF":
                     self._set_state(light_key, 0)
                     self.logger_instance.info(
-                            "RPIOutputLights - Resetting light {} - {}".format(
-                                light_key,
-                                self._get_description(light_key)))
+                        "RPIOutputLights - Resetting light {} - {}".format(
+                            light_key,
+                            self._get_description(light_key)))
                 else:
                     self.logger_instance.warning(
-                            "RPIOutputLights - Unknown action received {} for message {} - skipping!".format(
-                                light_action,
-                                message))
+                        "RPIOutputLights - Unknown action received {} for message {} - skipping!".format(
+                            light_action,
+                            message))
         except KeyError:
             self.logger_instance.debug(
                 "RPIOutputLights - Unknow incoming event received {} - skipping".format(message))
@@ -226,28 +230,30 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
         '''
         reply = True    # We assume we keep going
 
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received
+        self.logger_instance.debug(
+            f"RPiOutputLights - Processing Message {message}")
+
+        event_message = json.loads(message)
+        # A process related message was received
+        if event_message["Type"] == "Processing":
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the output_lights list to update any
             # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and event_message["Event"] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.output_lights = self.create_output_lights_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
-        elif message_list[0] == "I":  # An input button related message was received
+        # An input button related message was received
+        elif event_message["Type"] == "Input":
             self.logger_instance.debug(
-                "RPIOutputLights - Parsing input button message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_incoming_message(message_list[1])
-        elif message_list[0] == "S":  # A Light Simulator related message was received
+                f"RPIOutputLights - {event_message['Event']} event received")
+            self.parse_incoming_message(event_message['Event'])
+        # A Light Simulator related message was received
+        elif event_message["Type"] == "Simulation":
             self.logger_instance.debug(
-                "RPIOutputLights - Parsing light simulator message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_incoming_message(message_list[1])
+                f"RPIOutputLights - Parsing light simulator event {event_message['Event']}")
+            self.parse_incoming_message(event_message['Event'])
 
         return reply
 
@@ -263,6 +269,8 @@ class RPiOutputLights(RPiProcessFramework, RPiPiface):
                 self.set_output_pin(board_number, pin_number)
             else:
                 self.reset_output_pin(board_number, pin_number)
+
+
 def main():
     '''
     Initiating the RPiOutputLights process
@@ -275,6 +283,7 @@ def main():
             output_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 output_handler_instance.process_message,
                 output_handler_instance.process_output_lights)
+
 
 if __name__ == '__main__':
     main()

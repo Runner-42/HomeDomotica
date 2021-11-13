@@ -342,7 +342,10 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         - PRESSEDLONG
         - PRESSEDDOUBLE
         Messages are constructed with following syntax:
-        - "I;<process_name>_<board_number>_<pin_number>_<event>"
+        {
+            "Type": "Input",
+            "Event": "<process_name>_<board_number>_<pin_number>_<event>"
+        }
         '''
         # We first read the status of all input buttons
         self._read_input_buttons()
@@ -350,10 +353,8 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         # Now let's process the changes
         for key in self.input_buttons:
             if self._get_button_state(key) != self._get_previous_button_state(key):
-                message_pre_able = "I;{}_{}_{}_".format(
-                    self.process_attributes.get_item("ProcessName").upper(),
-                    _get_board_number(key),
-                    _get_pin_number(key),)
+                event_pre_amble = f"{self.process_attributes.get_item('ProcessName').upper()}_{_get_board_number(key)}_{_get_pin_number(key)}_"
+
                 if self._get_button_state(key) == 1:    # Up event dedected
                     # set "time stamp" of button up event
                     self._set_button_signalup_timestamp(key, time.time())
@@ -367,9 +368,12 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             _get_pin_number(key),
                             self._get_button_description(key))
                     )
-                    # TO-DO: Add code to send "UP-event" message to consummer queue(s)
+                    event = event_pre_amble+"UP"
+                    data = {"Type": "Input",
+                            "Event": event}
+                    json_data = json.dumps(data)
                     self.process_output_queue_handler.send_message(
-                        self.process_consumers[key], message_pre_able+"UP")
+                        self.process_consumers[key], json_data)
                 else:                                   # Down event detected
                     # set "time stamp" of button down event
                     self._set_button_signaldown_timestamp(key, time.time())
@@ -379,9 +383,12 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             _get_pin_number(key),
                             self._get_button_description(key))
                     )
-                    # TO-DO: Add code to send "DOWN-event" message to consummer queue(s)
+                    event = event_pre_amble+"DOWN"
+                    data = {"Type": "Input",
+                            "Event": event}
+                    json_data = json.dumps(data)
                     self.process_output_queue_handler.send_message(
-                        self.process_consumers[key], message_pre_able+"DOWN")
+                        self.process_consumers[key], json_data)
                     # Check to see if we have a Pulse, Long Pulse or Double pulse event
                     # by assessing the duration of the pulse and the time since the previous pulse
                     pulse_duration = self._get_button_signaldown_timestamp(key) -\
@@ -397,21 +404,25 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                         self.logger_instance.info(
                             "RPiInputButton - Long button pressed event for {}".format(
                                 self._get_button_description(key)))
-                        # TO-DO: Add code to send "Long buttong pressed event" message
-                        # to consummer queue(s)
+                        event = event_pre_amble+"PRESSEDLONG"
+                        data = {"Type": "Input",
+                                "Event": event}
+                        json_data = json.dumps(data)
                         self.process_output_queue_handler.send_message(
                             self.process_consumers[key],
-                            message_pre_able+"PRESSEDLONG")
+                            json_data)
                     elif pulse_duration > 0.25:
                         # Button pressed identified
                         self.logger_instance.info(
                             "RPiInputButton - Button pressed event for {}".format(
                                 self._get_button_description(key)))
-                        # TO-DO: Add code to send "Long buttong pressed event" message
-                        # to consummer queue(s)
+                        event = event_pre_amble+"PRESSED"
+                        data = {"Type": "Input",
+                                "Event": event}
+                        json_data = json.dumps(data)
                         self.process_output_queue_handler.send_message(
                             self.process_consumers[key],
-                            message_pre_able+"PRESSED")
+                            json_data)
                     else:
                         # If this is the first "short" pulse (this is a pulse that is shorter
                         # than 0,25 seconds) remember this. It could be the start of
@@ -424,11 +435,13 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                             self.logger_instance.info(
                                 "RPiInputButton - Double button pressed event for {}".format(
                                     self._get_button_description(key)))
-                            # TO-DO: Add code to send "Long buttong pressed event"
-                            # message to consummer queue(s)
+                            event = event_pre_amble+"PRESSEDDOUBLE"
+                            data = {"Type": "Input",
+                                    "Event": event}
+                            json_data = json.dumps(data)
                             self.process_output_queue_handler.send_message(
                                 self.process_consumers[key],
-                                message_pre_able+"PRESSEDDOUBLE")
+                                json_data)
                             # Reset the Button Pressed Count back to 0
                             self._reset_button_presscount(key)
 
@@ -451,8 +464,6 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
 
         event_message = json.loads(message)
         if event_message["Type"] == "Processing":
-            self.logger_instance.debug(
-                f"RPiInputButton - {event_message['Type']} Message received")
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the inputbutton list to update any
@@ -464,19 +475,6 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                     self.process_attributes.__repr__())
                 self.process_consumers = self.create_message_senders(
                     self.process_attributes.__repr__())
-
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received,
-            reply = super().process_message(message)
-            # When the process attribute list has been refreshed
-            # It's also necessary to refresh the inputbutton list to update any
-            # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
-                self.input_buttons = self.create_inputbutton_list(
-                    self.process_attributes.__repr__())
-                self.process_consumers = self.create_message_senders(
-                    self.process_attributes.__repr__())
-
         return reply
 
 

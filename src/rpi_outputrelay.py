@@ -15,6 +15,7 @@ from rpi_piface import RPiPiface
 from rpi_processframework import RPiProcessFramework
 #from rpi_messagesender import RPiMessageSender
 
+
 class RPiOutputRelay(RPiProcessFramework, RPiPiface):
     '''
     This class is created to handle the Output Relays available on a piface board
@@ -47,29 +48,33 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
                               => PULSE action should be triggered for output relay 1
                                   on boards 0 and 1
     '''
+
     def __init__(self):
         # Initialize process framework attributes so we can start using them
         RPiProcessFramework.__init__(self, default_log_level='INFO')
 
         # Initialize all installed PiFace boards
-        self.logger_instance.debug("RPiOutputRelay - Initializing PiFace boards")
+        self.logger_instance.debug(
+            "RPiOutputRelay - Initializing PiFace boards")
         RPiPiface.__init__(self)
         # Let's share some log information
         if RPiPiface.get_number_of_boards(self) == 0:
             self.logger_instance.critical(
                 "RPiOutputRelay - No PiFace boards detected. \
                 Unable to process input signals"
-                )
+            )
             self.run_process = False    # No need to continue
         elif RPiPiface.get_number_of_boards(self) == 4:
-            self.logger_instance.info("RPiOutputRelay - Four PiFace boards detected")
+            self.logger_instance.info(
+                "RPiOutputRelay - Four PiFace boards detected")
         else:
             self.logger_instance.warning(
-                "RPiOutputRelay - Potentially not all PiFace boards detected." +\
+                "RPiOutputRelay - Potentially not all PiFace boards detected." +
                 "Address of last detected board = {}".format(RPiPiface.get_number_of_boards(self)-1))
 
         # Initialize the output relay dictionary
-        self.output_relays = self.create_output_relay_list(self.process_attributes.__repr__())
+        self.output_relays = self.create_output_relay_list(
+            self.process_attributes.__repr__())
         # Initialize the process logic dictionary
         self.process_logic = self.create_process_logic_dictionary()
 
@@ -81,7 +86,8 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
 
     def __str__(self):
         long_string = RPiProcessFramework.__str__(self)
-        long_string += "Number of PiFace boards detected: {}\n".format(RPiPiface.get_number_of_boards(self))
+        long_string += "Number of PiFace boards detected: {}\n".format(
+            RPiPiface.get_number_of_boards(self))
         if self.output_relays != {}:
             long_string += "output_relays:\n"
             for key, value in self.output_relays.items():
@@ -194,18 +200,18 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
                             0]  # Timestamp when pulse status was change
                         self.logger_instance.debug(
                             "RPiOutputRelay - Initializing output_relay: {}".format(
-                                attribute_key) +\
+                                attribute_key) +
                             " - State: {}".format(
-                                reply[attribute_key][0]) +\
+                                reply[attribute_key][0]) +
                             " - Description: {}".format(
-                                reply[attribute_key][1]) +\
+                                reply[attribute_key][1]) +
                             " - Logic: {}".format(
-                                reply[attribute_key][2]) +\
+                                reply[attribute_key][2]) +
                             " - Pulse: {}".format(
-                                reply[attribute_key][3]) +\
+                                reply[attribute_key][3]) +
                             " - Pulse Time Stamp: {}".format(
                                 reply[attribute_key][4])
-                            )
+                        )
 
         return reply
 
@@ -225,14 +231,14 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
                 for items in logic_list:
                     input_reference, action = items.split('|')
                     action_list_item = [key, action]
-                    if input_reference in logic_dictionary: # pylint: disable=consider-using-get
+                    if input_reference in logic_dictionary:  # pylint: disable=consider-using-get
                         action_list = logic_dictionary[input_reference]
                     else:
                         action_list = []
                     self.logger_instance.debug(
                         "RPIOutputRelay - Adding item to process logic list {}: {}".format(
-                                                                                           input_reference,
-                                                                                           action_list_item))
+                            input_reference,
+                            action_list_item))
                     action_list.append(action_list_item)
                     logic_dictionary[input_reference] = action_list
 
@@ -245,9 +251,11 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
         '''
         for key in self.output_relays:
             if self._get_state(key) == 0:
-                RPiPiface.reset_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
+                RPiPiface.reset_output_relay(
+                    self, self._get_board_number(key), self._get_relay_number(key))
             else:
-                RPiPiface.set_output_relay(self, self._get_board_number(key), self._get_relay_number(key))
+                RPiPiface.set_output_relay(self, self._get_board_number(
+                    key), self._get_relay_number(key))
 
     def parse_input_button_message(self, message):
         '''
@@ -297,22 +305,26 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
         '''
         reply = True    # We assume we keep going
 
-        message_list = message.split(";")
-        if message_list[0] == "P":  # A process related message was received
+        self.logger_instance.debug(
+            f"RPiOutputrelay - Processing Message {message}")
+
+        event_message = json.loads(message)
+
+        # A process related message was received
+        if event_message["Type"] == "Processing":
             reply = super().process_message(message)
             # When the process attribute list has been refreshed
             # It's also necessary to refresh the outputrelay list to update any
             # changes
-            if reply is True and message_list[1] == 'REFRESH_PROCESS_ATTRIBUTES':
+            if reply is True and event_message["Event"] == 'REFRESH_PROCESS_ATTRIBUTES':
                 self.output_relays = self.create_output_relay_list(
                     self.process_attributes.__repr__())
                 self.process_logic = self.create_process_logic_dictionary()
-        elif message_list[0] == "I":  # An input button related message was received
+        # An input button related message was received
+        elif event_message["Type"] == "Input":
             self.logger_instance.debug(
-                "RPIOutputRelay - Parsing input button message received {} - {}".format(
-                    message,
-                    message_list[1]))
-            self.parse_input_button_message(message_list[1])
+                f"RPIOutputRelay - {event_message['Event']} event received")
+            self.parse_input_button_message(event_message['Event'])
 
         return reply
 
@@ -333,6 +345,7 @@ class RPiOutputRelay(RPiProcessFramework, RPiPiface):
 
         self._handle_output_relays()
 
+
 def main():
     '''
     Initiating the RPiOutputRelay process
@@ -345,6 +358,7 @@ def main():
             output_handler_instance.run_process = consumer.consume(  # pylint: disable=assignment-from-no-return
                 output_handler_instance.process_message,
                 output_handler_instance.process_output_relay)
+
 
 if __name__ == '__main__':
     main()
