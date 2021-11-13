@@ -14,6 +14,7 @@ import time
 from rpi_processframework import RPiProcessFramework
 from rpi_piface import RPiPiface
 from rpi_messagesender import RPiMessageSender
+import json
 
 
 class RPiInputButton(RPiProcessFramework, RPiPiface):
@@ -448,6 +449,14 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
         self.logger_instance.debug(
             f"RPiInputButton - Processing Message {message}")
 
+        event_message = json.loads(message)
+        if event_message["Type"] == "Processing":
+            self.logger_instance.debug(
+                f"RPiInputButton - {event_message['Type']} Message received")
+            if event_message["Event"] == "PRINT_PROCESSING_STATUS":
+                self.logger_instance.debug(
+                    f"RPiInputButton - {event_message['Event']} event received")
+
         message_list = message.split(";")
         if message_list[0] == "P":  # A process related message was received,
             reply = super().process_message(message)
@@ -459,14 +468,6 @@ class RPiInputButton(RPiProcessFramework, RPiPiface):
                     self.process_attributes.__repr__())
                 self.process_consumers = self.create_message_senders(
                     self.process_attributes.__repr__())
-
-        event_message = json.loads(message)
-        if event_message["Type"] == "Processing":
-            self.logger_instance.debug(
-                f"RPiInputButton - {event_message['Type']} Message received")
-            if event_message["Event"] == "PRINT_PROCESSING_STATUS":
-                self.logger_instance.debug(
-                    f"RPiInputButton - {event_message['Event']} event received")
 
         return reply
 
