@@ -2,14 +2,22 @@
 
 exec > >(tee -a "/var/log/homedomotica/HomeDomotica.log") 2>&1
 date
-echo "Starting Home Domotica processes"
 
-source /home/homedomotica/environments/green/bin/activate
+if [[ $# -gt 0 ]]
+then
+    active_environment=$1
+else
+    active_environment=green
+fi
+
+echo "Starting Home Domotica processes on $active_environment environment"
+
+source /home/homedomotica/environments/$active_environment/bin/activate
 
 log_level=DEBUG
 
-path_to_source_file=/home/homedomotica/environments/green/src
-path_to_configuration_file=/home/homedomotica/environments/green/config
+path_to_source_file=/home/homedomotica/environments/$active_environment/src
+path_to_configuration_file=/home/homedomotica/environments/$active_environment/config
 
 # Extract pi reference as the last character of the hostname
 # example DomoticaPi1 => pi reference = 1

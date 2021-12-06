@@ -2,11 +2,20 @@
 
 exec > >(tee -a "/var/log/homedomotica/HomeDomotica.log") 2>&1
 date
-echo "Stopping Home Domotica processes"
 
-source /home/homedomotica/environments/green/bin/activate
 
-path_to_tool_files=/home/homedomotica/environments/green/tools
+if [[ $# -gt 0 ]]
+then
+    active_environment=$1
+else
+    active_environment=green
+fi
+
+echo "Stopping Home Domotica processes on $active_environment environment"
+
+source /home/homedomotica/environments/$active_environment/bin/activate
+
+path_to_tool_files=/home/homedomotica/environments/$active_environment/tools
 
 h=`hostname`
 pi_reference=`echo -n $h|tail -c 1`
