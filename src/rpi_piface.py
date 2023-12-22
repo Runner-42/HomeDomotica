@@ -15,7 +15,7 @@ from pifacedigitalio import NoPiFaceDigitalDetectedError
 
 class RPiPiface():
     '''
-    This class is created to handle piface specific functionaity
+    This class is created to handle piface specific functionality
     It's been implemented to avoid code duplication in those processes
     making use of a piface board like rpi_inputbutton, rpi_outputrelay...etc
     Following attributes are defined in the RPiInputButton class:
@@ -52,7 +52,7 @@ class RPiPiface():
         '''
         get method to retrieve the actual status of a digital input
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - input_number to represent the pin: allowed values 0->7 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= input_number <= 7):
@@ -65,7 +65,7 @@ class RPiPiface():
         '''
         get method to retrieve the actual status of a digital output
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - pin_number to represent the pin: allowed values 0->7 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= pin_number <= 7):
@@ -77,7 +77,7 @@ class RPiPiface():
         '''
         set method to put the actual status of a digital output to 'on'
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - pin_number to represent the pin: allowed values 0->7 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= pin_number <= 7):
@@ -87,7 +87,7 @@ class RPiPiface():
         '''
         set method to put the actual status of a digital output to 'off'
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - pin_number to represent the pin: allowed values 0->7 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= pin_number <= 7):
@@ -98,7 +98,7 @@ class RPiPiface():
         '''
         get method to retrieve the actual status of a digital output
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - relay_number: allowed values 0->1 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= relay_number <= 1):
@@ -110,7 +110,7 @@ class RPiPiface():
         '''
         set method to put the actual status of a digital output to 'on'
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - relay_number: allowed values 0->1 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= relay_number <= 1):
@@ -120,7 +120,7 @@ class RPiPiface():
         '''
         set method to put the actual status of a relay to 'off'
         2 parameters need to be provide:
-        - board_number: allow values 0->3
+        - board_number: allowed values 0->3
         - relay_number: allowed values 0->1 
         '''
         if (0 <= board_number < self.number_of_boards) and (0 <= relay_number <= 1):
